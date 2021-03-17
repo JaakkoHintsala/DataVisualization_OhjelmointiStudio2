@@ -1,0 +1,9 @@
+17.3.2021
+
+I started the project this monday. Most of my effort thus far has gone into figuring out how to use scalafx library in a proper manner.
+
+Current objective:
+
+Work out what is the best way turn a list of data to a column in a table. In Taulu.scala is my first attempt at it.
+My vision is that after opening a data file, the program imports the data automatically to a table.
+The user can then choose which columns/rows they want use in a chart.
