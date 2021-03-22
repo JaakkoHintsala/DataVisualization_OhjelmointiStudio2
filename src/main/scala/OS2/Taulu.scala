@@ -27,7 +27,7 @@ case class Int2x(h1: String,  h2: String, sarakkeet: Vector[IntCell]) {
 
     val str = StringConverter[Int](fs,ts)
 
-   // c1.setCellFactory(TextFieldTableCell.forTableColumn[IntCell,Int](str))
+  //  c1.setCellFactory(TextFieldTableCell.forTableColumn[IntCell,Int](str))
 
 
     c1.cellValueFactory = x => ObjectProperty(x.value.a1)
