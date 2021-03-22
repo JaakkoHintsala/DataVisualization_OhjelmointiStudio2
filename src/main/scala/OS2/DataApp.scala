@@ -2,6 +2,7 @@ package OS2
 
 import scalafx.Includes._
 import scalafx.application.JFXApp
+import scalafx.beans.property.DoubleProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.event.ActionEvent
 import scalafx.scene._
@@ -50,14 +51,22 @@ object Appi extends JFXApp {
     val tab1 = new Tab
     val tab2 = new Tab
     val tab3 = new Tab
-    tab1.text = "ykkönen"
-    tab2.text = "kakkonen"
-    tab3.text = "kolmonen"
+    tab1.text = "table"
+    tab2.text = "chatter"
+    tab3.text = "line"
 
-    val s1 = IntSarake("numerot", ObservableBuffer(1, 2, 3, 4).map(x => IntCell(x)))
+    val s1 = Vector(10,11,12,13,14)
+      .zip(Vector(4,7,9,11,12))
+      .map(x => IntCell(x._1,x._2))
 
-    val t1 = IntTaulukko("N", Vector(s1))
-    tab1.content = t1.GUIElem
+    val t1 = Int2x("vuosi", "määrä", s1)
+    t1.table.editable = true
+    tab1.content = t1.table
+
+    val ch = t1.chatter
+    val lin = t1.line
+    tab2.content = ch
+    tab3.content = lin
 
     tabit.tabs = List(tab1, tab2, tab3)
 
