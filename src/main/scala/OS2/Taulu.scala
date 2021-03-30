@@ -13,7 +13,7 @@ import scalafx.scene.control.cell.TextFieldTableCell.forTableColumn
 import scalafx.util.StringConverter
 
 
-case class IntCell(a1: Int, a2: Int) {
+case class IntCell(a1: Number, a2: Number) {
   val value1 = new ObjectProperty(this, "1", a1)
 
   val value2 = new ObjectProperty(this, "1", a2)
@@ -31,39 +31,44 @@ case class Int2x(h1: String, h2: String, sarakkeet: Vector[IntCell]) {
 
     data.map(x => XYChart.Data[Number, Number](x.value1.value, x.value2.value))
   )
+  def updateChart() = {
+    d.dataProperty.setValue(data.map(x => XYChart.Data[Number, Number](x.value1.value, x.value2.value)))
+  }
 
   def table = {
 
     val v = new TableView(data)
     v.editable = true
 
-    val c1 = new TableColumn[IntCell, Int](h1)
-    val c2 = new TableColumn[IntCell, Int](h2)
+    val c1 = new TableColumn[IntCell, Number](h1)
+    val c2 = new TableColumn[IntCell, Number](h2)
     c1.id = h1
     c2.id = h2
 // turns out that values get updated by default
-/*    c1.onEditCommit = { e =>
-     // e.getRowValue.value1.value = e.getNewValue
+    c1.onEditCommit = { e =>
+      e.getRowValue.value1.value = e.getNewValue
+      updateChart()
       println("edit success")
     }
     c2.onEditCommit = { e =>
-    //  e.getRowValue.value2.value = e.getNewValue
+      e.getRowValue.value2.value = e.getNewValue
+      updateChart()
       println("edit success")
-    }*/
+    }
 
-    def fs(string: String): Int = string.toInt
+    def fs(string: String): Number = string.toInt
 
-    def ts(int: Int): String = int.toString
+    def ts(int: Number): String = int.toString
 
-    val str = StringConverter[Int](fs, ts)
+    val str = StringConverter[Number](fs, ts)
 
     c1.cellFactory = {
-      val cell = TextFieldTableCell.forTableColumn[IntCell, Int](str)
+      val cell = TextFieldTableCell.forTableColumn[IntCell, Number](str)
 
       cell
     }
     c2.cellFactory = {
-      val cell = TextFieldTableCell.forTableColumn[IntCell, Int](str)
+      val cell = TextFieldTableCell.forTableColumn[IntCell, Number](str)
 
       cell
     }
@@ -92,11 +97,10 @@ case class Int2x(h1: String, h2: String, sarakkeet: Vector[IntCell]) {
     val y = NumberAxis()
     x.label = h1
     y.label = h2
-    val d = XYChart.Series[Number, Number](
 
-      data.map(x => XYChart.Data[Number, Number](x.value1.value, x.value2.value)))
 
     val l = new LineChart[Number, Number](x, y, ObservableBuffer(d))
+
     l.title = "viiva"
     l
   }

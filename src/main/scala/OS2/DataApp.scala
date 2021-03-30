@@ -51,9 +51,11 @@ object Appi extends JFXApp {
     val tab1 = new Tab
     val tab2 = new Tab
     val tab3 = new Tab
+    val tab4 = new Tab
     tab1.text = "table"
     tab2.text = "chatter"
     tab3.text = "line"
+    tab4.text = "printValues"
 
     val s1 = Vector(10,11,12,13,14)
       .zip(Vector(4,7,9,11,12))
@@ -70,10 +72,11 @@ object Appi extends JFXApp {
     val lin = t1.line
     val ch = t1.chatter
     tab2.content = ch
-    tab3.content = b
+    tab3.content = lin
+    tab4.content = b
 
 
-    tabit.tabs = List(tab1, tab2, tab3)
+    tabit.tabs = List(tab1, tab2, tab3, tab4)
 
 
     val scrolli = new ScrollPane
