@@ -61,12 +61,17 @@ object Appi extends JFXApp {
 
     val t1 = Int2x("vuosi", "määrä", s1)
     t1.table.editable = true
+    val b = new Button("printti")
+    b.onAction = e => t1.printti()
+
     tab1.content = t1.table
 
-    val ch = t1.chatter
+
     val lin = t1.line
+    val ch = t1.chatter
     tab2.content = ch
-    tab3.content = lin
+    tab3.content = b
+
 
     tabit.tabs = List(tab1, tab2, tab3)
 
