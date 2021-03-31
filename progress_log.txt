@@ -7,3 +7,7 @@ Current objective:
 Work out what is the best way turn a list of data to a column in a table. In Taulu.scala is my first attempt at it.
 My vision is that after opening a data file, the program imports the data automatically to a table.
 The user can then choose which columns/rows they want use in a chart.
+
+I've decided to cut back on some of my other courses to focus on this
+Currently I'm pretty happy with how fileMuunnin is working eventhough it will need to be revised in case I want to save different data types than Int2x.
+My immediate next objective is to make it possible for the user to select colums/cells and make a new table/chart out of them.
