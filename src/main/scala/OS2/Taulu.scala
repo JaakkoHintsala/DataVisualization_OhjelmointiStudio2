@@ -5,6 +5,7 @@ package OS2
 import scalafx.beans.property.ObjectProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.scene.chart.XYChart.Series
+
 import scalafx.scene.chart._
 import scalafx.scene.control._
 import scalafx.Includes._
@@ -24,15 +25,20 @@ case class Int2x(h1: String, h2: String, sarakkeet: Vector[IntCell]) {
   val data = ObservableBuffer(sarakkeet: _*)
 
   def printti() = data.foreach(x => {
-    println("value1: " + x.value1); println("value2: " + x.value2)
+    println("value1: " + x.value1);
+    println("value2: " + x.value2)
   })
 
   val d = XYChart.Series[Number, Number](
 
     data.map(x => XYChart.Data[Number, Number](x.value1.value, x.value2.value))
   )
+
   def updateChart() = {
     d.dataProperty.setValue(data.map(x => XYChart.Data[Number, Number](x.value1.value, x.value2.value)))
+    line.setData(ObservableBuffer(d))
+    chatter.setData(ObservableBuffer(d))
+    // chatter = chatterr // doesnt work
   }
 
   def table = {
@@ -44,7 +50,7 @@ case class Int2x(h1: String, h2: String, sarakkeet: Vector[IntCell]) {
     val c2 = new TableColumn[IntCell, Number](h2)
     c1.id = h1
     c2.id = h2
-// turns out that values get updated by default
+    // turns out that values get updated by default
     c1.onEditCommit = { e =>
       e.getRowValue.value1.value = e.getNewValue
       updateChart()
@@ -78,9 +84,9 @@ case class Int2x(h1: String, h2: String, sarakkeet: Vector[IntCell]) {
     v
   }
 
-  def chatter = {
-    val x = NumberAxis()
-    val y = NumberAxis()
+  def chatterr = {
+    val x = new NumberAxis
+    val y = new NumberAxis
     x.label = h1
     y.label = h2
 
@@ -91,10 +97,10 @@ case class Int2x(h1: String, h2: String, sarakkeet: Vector[IntCell]) {
   }
 
 
-  def line = {
+  def linee = {
 
-    val x = NumberAxis()
-    val y = NumberAxis()
+    val x = new NumberAxis
+    val y = new NumberAxis
     x.label = h1
     y.label = h2
 
@@ -104,5 +110,8 @@ case class Int2x(h1: String, h2: String, sarakkeet: Vector[IntCell]) {
     l.title = "viiva"
     l
   }
+
+  val line = linee
+  val chatter = chatterr
 
 }

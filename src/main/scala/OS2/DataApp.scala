@@ -31,13 +31,29 @@ object Appi extends JFXApp {
       fileOpen.onAction = (e: ActionEvent) => {
         val ch = new FileChooser
         val selected = ch.showOpenDialog(stage)
+
+        val curr = new Tab()
+        curr.text = "New tabb"
+        curr.content = fileMuunnin.fromFile(selected.getAbsolutePath).table
+
+        tabit.tabs.add(curr)
         println(selected.toString)
       }
       val fileDelete = new MenuItem("Delete")
 
+      val fileSave = new MenuItem("Save")
+
+      fileSave.onAction = (e: ActionEvent) => {
+        val ch = new FileChooser
+        val selected = ch.showOpenDialog(stage)
+        fileMuunnin.toFile(selected.getAbsolutePath, t1)
+        println(selected.toString)
+      }
+
       fileMenu.items = List(
         fileNew,
         fileOpen,
+        fileSave,
         fileDelete
       )
 
@@ -62,6 +78,7 @@ object Appi extends JFXApp {
       .map(x => IntCell(x._1,x._2))
 
     val t1 = Int2x("vuosi", "määrä", s1)
+
     t1.table.editable = true
     val b = new Button("printti")
     b.onAction = e => t1.printti()
