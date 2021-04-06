@@ -51,6 +51,7 @@ case class Int2x(h1: String, h2: String, sarakkeet: Vector[IntCell]) {
     c1.id = h1
     c2.id = h2
 
+
     v.tableMenuButtonVisible = true
     // turns out that values get updated by default
     c1.onEditCommit = { e =>
