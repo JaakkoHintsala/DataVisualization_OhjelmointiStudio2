@@ -1,5 +1,8 @@
 package OS2
 
+import scalafx.scene.layout.StackPane
+import scalafx.scene.input.MouseEvent._
+import scalafx.scene.Node
 import scalafx.beans.property.{IntegerProperty, ObjectProperty, StringProperty}
 import scalafx.collections.ObservableBuffer
 import scalafx.scene.chart.XYChart.Series
@@ -7,9 +10,14 @@ import scalafx.scene.chart._
 import scalafx.scene.control._
 import scalafx.Includes._
 import scalafx.event.ActionEvent
+import scalafx.scene.AccessibleRole
+import scalafx.scene.control.ContentDisplay._
 import scalafx.scene.control.cell._
 import scalafx.scene.control.cell.TextFieldTableCell.forTableColumn
+import scalafx.scene.input.MouseEvent
 import scalafx.util.converter.DefaultStringConverter
+
+import java.beans.EventHandler
 
 case class StrProp(string: String) {
   val strValue = StringProperty(string)
@@ -78,13 +86,75 @@ case class GenericTaulu(vector: Vector[GenericRow]) {
           cell
         }
         col.cellValueFactory = _.value.valueAt(colIndex)
-        col.graphic.value
+        col.prefWidth = 85
+
+        col.id = s"C$colIndex"
+
+        val label = new Label(s"col $colIndex")
+        label.contentDisplay = TextOnly
+        val stack = new StackPane()
+        stack.id = "stack"
+
+        stack.children.add(label)
+        if (stack.lookup("#stack > .label") != null) {
+          println(stack.lookup("#stack > .label").toString() + "löyty")
+        }
+        table.setTableMenuButtonVisible(true)
+
+
+        stack.filterEvent(MouseEvent.MousePressed) {
+          me: MouseEvent => {
+            println("stack click")
+            if (me.altDown) {
+              println("alt")
+              table.selectionModel.value.clearSelection()
+              table.selectionModel.value.selectRange(0, col, data.size, col)
+              me.consume()
+            }
+            if (me.clickCount > 1) {
+              val text = new TextField()
+              text.text = label.text.value
+              text.onAction = (a: ActionEvent) => {
+                label.text = text.text.value
+              }
+              text.focusedProperty().addListener((pro, oldV, newV) => {
+                println("vals" + pro.toString + oldV + newV)
+                if (!newV ) {
+                  stack.children.remove(text)
+
+                label.toFront
+              }
+              })
+              stack.children.add(text)
+              text.requestFocus()
+              me.consume()
+
+              //if (stack.lookup("#stack > .label") != null) {
+                //println(stack.lookup("#stack > .label").toString() + "löyty")
+              //}
+
+
+            }
+
+
+          }
+        }
+        col.graphic = stack
+
+
         table.columns.add(col)
+        /*        if (table.lookup(s"#C$colIndex") != null) {
+                  println(  "löyty")
+                }*/
       }
     }
 
   }
 
+  // table.filterEvent(MouseEvent.MousePressed
+
+  table.selectionModel().selectionMode = SelectionMode.Multiple
+  table.selectionModel().cellSelectionEnabled = true
   table.setEditable(true)
   val cmenu = new ContextMenu()
   val rowmenu = new MenuItem("Add row")
@@ -94,13 +164,14 @@ case class GenericTaulu(vector: Vector[GenericRow]) {
     }
   }
   val colmenu = new MenuItem("Add column")
-    colmenu.onAction = {
+  colmenu.onAction = {
     e: ActionEvent => {
       addCol()
     }
   }
   cmenu.items ++= List(rowmenu, colmenu)
   table.contextMenu = cmenu
+  // table.filterEvent()
   refresh()
 
 
