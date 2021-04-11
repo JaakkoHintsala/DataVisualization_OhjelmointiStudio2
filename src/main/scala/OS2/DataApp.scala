@@ -78,7 +78,7 @@ object Appi extends JFXApp {
 
     testitab.text = "testi"
 
-    val t = GenericTaulu(Vector(GenericRow(Vector("teeeest"))))
+    val t = GenericTaulu(Vector(GenericRow(Vector("teeeest"))),Vector())
 
     testitab.content = t.table
 
@@ -104,7 +104,7 @@ object Appi extends JFXApp {
     tab4.content = b
 
 
-    tabit.tabs = List(tab1, tab2, tab3, tab4, testitab)
+    tabit.tabs = List(testitab )
 
 
     val scrolli = new ScrollPane

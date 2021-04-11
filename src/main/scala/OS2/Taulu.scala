@@ -5,12 +5,12 @@ package OS2
 import scalafx.beans.property.ObjectProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.scene.chart.XYChart.Series
-
 import scalafx.scene.chart._
 import scalafx.scene.control._
 import scalafx.Includes._
 import scalafx.scene.control.cell._
 import scalafx.scene.control.cell.TextFieldTableCell.forTableColumn
+import scalafx.scene.input.MouseEvent
 import scalafx.util.StringConverter
 
 
@@ -90,18 +90,25 @@ case class Int2x(h1: String, h2: String, sarakkeet: Vector[IntCell]) {
 
 
     v.focusModel.value.focusedCellProperty().onChange((obs, oldVal, newVal) => {
-      if(newVal.getTableColumn != null){
+      if (newVal.getTableColumn != null) {
 
-      val alku : TableColumnBase[IntCell,_] = v.columns(newVal.getColumn)
-      v.selectionModel.value.selectRange(0, alku, v.items().size(), alku)
-       println("Selected TableColumn: "+ newVal.getTableColumn.text)
-       println("Selected column index: "+ newVal.getColumn)
+        val alku: TableColumnBase[IntCell, _] = v.columns(newVal.getColumn)
+        v.selectionModel.value.selectRange(0, alku, v.items().size(), alku)
+        println("Selected TableColumn: " + newVal.getTableColumn.text)
+        println("Selected column index: " + newVal.getColumn)
       }
     })
-
-     v.selectionModel.apply.selectedItem.onChange {
-        println("Selected" + v.selectionModel.apply.getSelectedItems + " index: " + v.selectionModel.value.getFocusedIndex)
+    v.filterEvent(MouseEvent.MousePressed) {
+      e: MouseEvent => {
+        if (!e.shiftDown) {
+          e.consume()
+        }
       }
+    }
+
+    v.selectionModel.apply.selectedItem.onChange {
+      println("Selected" + v.selectionModel.apply.getSelectedItems + " index: " + v.selectionModel.value.getFocusedIndex)
+    }
 
 
     v
@@ -115,7 +122,7 @@ case class Int2x(h1: String, h2: String, sarakkeet: Vector[IntCell]) {
 
     val aaa = ObservableBuffer(d)
 
-//aaa.addListener(
+    //aaa.addListener(
     val plotti = new ScatterChart(x, y, ObservableBuffer(d))
     plotti.title = "chatteri"
     plotti
