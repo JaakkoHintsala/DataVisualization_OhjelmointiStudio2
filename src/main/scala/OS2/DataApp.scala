@@ -34,7 +34,7 @@ object Appi extends JFXApp {
 
         val curr = new Tab()
         curr.text = "New tabb"
-        curr.content = fileMuunnin.fromFile(selected.getAbsolutePath).table
+        curr.content = GenericTableConverter.fromFile(selected.getAbsolutePath).table
 
         tabit.tabs.add(curr)
         println(selected.toString)
@@ -46,7 +46,7 @@ object Appi extends JFXApp {
       fileSave.onAction = (e: ActionEvent) => {
         val ch = new FileChooser
         val selected = ch.showOpenDialog(stage)
-        fileMuunnin.toFile(selected.getAbsolutePath, t1)
+        GenericTableConverter.toFile(selected.getAbsolutePath, t)
         println(selected.toString)
       }
 
@@ -78,7 +78,7 @@ object Appi extends JFXApp {
 
     testitab.text = "testi"
 
-    val t = GenericTaulu(Vector(GenericRow(Vector("teeeest"))),Vector())
+    val t = GenericTaulu(Vector(GenericRow(Vector(""))),Vector())
 
     testitab.content = t.table
 
@@ -92,7 +92,7 @@ object Appi extends JFXApp {
 
     t1.table.editable = true
     val b = new Button("printti")
-    b.onAction = e => t1.printti()
+    b.onAction = e => t.data.foreach(x => println(x.propVector.map(_.strValue.value)))
 
     tab1.content = t1.table
 
@@ -104,7 +104,7 @@ object Appi extends JFXApp {
     tab4.content = b
 
 
-    tabit.tabs = List(testitab )
+    tabit.tabs = List(testitab, tab1, tab2, tab4 )
 
 
     val scrolli = new ScrollPane
