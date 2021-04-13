@@ -2,6 +2,9 @@ package OS2
 
 // import javafx.util.StringConverter
 
+import javafx.scene.control.Tooltip
+
+import javafx.scene.layout.StackPane
 import scalafx.beans.property.ObjectProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.scene.chart.XYChart.Series
@@ -25,19 +28,46 @@ case class Int2x(h1: String, h2: String, sarakkeet: Vector[IntCell]) {
   val data = ObservableBuffer(sarakkeet: _*)
 
   def printti() = data.foreach(x => {
-    println("value1: " + x.value1)
-    println("value2: " + x.value2)
+    // println("value1: " + x.value1)
+    //println("value2: " + x.value2)
+  })
+
+  val dataPoints = data.map(x => {
+    val initData = XYChart.Data[Number, Number](x.value1.value, x.value2.value)
+    val nodeStack = new StackPane()
+    nodeStack.setMinSize(10.0, 10.0)
+    initData.setNode(nodeStack)
+    //println(initData.getNode)
+
+
+    initData.getNode.filterEvent(MouseEvent.MousePressed) {
+      e: MouseEvent => {
+        // setTooltip( new Tooltip(s"x: ${initData.getXValue} y: ${initData.getYValue}"))
+        println(s"x: ${initData.getXValue} y: ${initData.getYValue}")
+
+        e.consume()
+      }
+    }
+
+
+    val toolT: Tooltip = new Tooltip(s"x: ${initData.getXValue} y: ${initData.getYValue}")
+    Tooltip.install(initData.getNode, toolT)
+
+    println(s"x: ${initData.getXValue} y: ${initData.getYValue}")
+
+    initData
+
   })
 
   val d = XYChart.Series[Number, Number](
-
-    data.map(x => XYChart.Data[Number, Number](x.value1.value, x.value2.value))
+    dataPoints
   )
+
 
   def updateChart() = {
     d.dataProperty.setValue(data.map(x => XYChart.Data[Number, Number](x.value1.value, x.value2.value)))
     line.setData(ObservableBuffer(d))
-    chatter.setData(ObservableBuffer(d))
+    //chatter.setData(ObservableBuffer(d))
     // chatter = chatterr // doesnt work
   }
 
@@ -54,16 +84,18 @@ case class Int2x(h1: String, h2: String, sarakkeet: Vector[IntCell]) {
 
     v.tableMenuButtonVisible = true
     // turns out that values get updated by default
+
     c1.onEditCommit = { e =>
       e.getRowValue.value1.value = e.getNewValue
-      updateChart()
+     updateChart()
       println("edit success")
     }
     c2.onEditCommit = { e =>
       e.getRowValue.value2.value = e.getNewValue
-      updateChart()
+       updateChart()
       println("edit success")
     }
+
 
     def fs(string: String): Number = string.toInt
 
@@ -89,22 +121,16 @@ case class Int2x(h1: String, h2: String, sarakkeet: Vector[IntCell]) {
     v.selectionModel().cellSelectionEnabled = true
 
 
-    v.focusModel.value.focusedCellProperty().onChange((obs, oldVal, newVal) => {
-      if (newVal.getTableColumn != null) {
+    /* v.focusModel.value.focusedCellProperty().onChange((obs, oldVal, newVal) => {
+       if (newVal.getTableColumn != null) {
 
-        val alku: TableColumnBase[IntCell, _] = v.columns(newVal.getColumn)
-        v.selectionModel.value.selectRange(0, alku, v.items().size(), alku)
-        println("Selected TableColumn: " + newVal.getTableColumn.text)
-        println("Selected column index: " + newVal.getColumn)
-      }
-    })
-    v.filterEvent(MouseEvent.MousePressed) {
-      e: MouseEvent => {
-        if (!e.shiftDown) {
-          e.consume()
-        }
-      }
-    }
+         val alku: TableColumnBase[IntCell, _] = v.columns(newVal.getColumn)
+         v.selectionModel.value.selectRange(0, alku, v.items().size(), alku)
+         println("Selected TableColumn: " + newVal.getTableColumn.text)
+         println("Selected column index: " + newVal.getColumn)
+       }
+     })
+     */
 
     v.selectionModel.apply.selectedItem.onChange {
       println("Selected" + v.selectionModel.apply.getSelectedItems + " index: " + v.selectionModel.value.getFocusedIndex)
@@ -124,6 +150,7 @@ case class Int2x(h1: String, h2: String, sarakkeet: Vector[IntCell]) {
 
     //aaa.addListener(
     val plotti = new ScatterChart(x, y, ObservableBuffer(d))
+    plotti
     plotti.title = "chatteri"
     plotti
   }
@@ -131,19 +158,35 @@ case class Int2x(h1: String, h2: String, sarakkeet: Vector[IntCell]) {
 
   def linee = {
 
+
     val x = new NumberAxis
     val y = new NumberAxis
     x.label = h1
+
     y.label = h2
 
 
-    val l = new LineChart[Number, Number](x, y, ObservableBuffer(d))
+    val l = new LineChart[Number, Number](x, y)
 
+    l.createSymbols.value = true
+   l.legendVisible = false
+
+    l.data = ObservableBuffer(d)
+l.animated = true
+
+    l.onMouseClicked = (e: MouseEvent) => {
+      // println("x: " + e.x +" y: "+ e.y)
+    }
+    val a = l.data.value
+    val b = a(0).data.value
     l.title = "viiva"
+
+
     l
   }
 
   val line = linee
-  val chatter = chatterr
+
+  //val chatter = chatterr
 
 }

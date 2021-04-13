@@ -46,33 +46,33 @@ case class GenericRow(vector: Vector[String]) {
 
 case class GenericTaulu(vector: Vector[GenericRow], initHeaders: Vector[String]) {
 
-  val defaultSize = IntegerProperty(5)
+  val defaultcols = IntegerProperty(3)
+  val defaultrows = IntegerProperty(5)
   val data: ObservableBuffer[GenericRow] = ObservableBuffer(vector: _*)
+  if (data.isEmpty){
+    data ++= Vector.fill(defaultrows.value)(GenericRow(Vector.fill(defaultcols.value)("")))
+  }
   val table = new TableView(data)
+  table.userData = this
+table.prefHeight = 300d
+  table.prefWidth = 250d
 
-  val headerfill = Vector.tabulate(vector.size)(x => s"col ${x + 1}").drop(initHeaders.size)
+  val headerfill = Vector.tabulate(data.head.rowValue.value.size)(x => s"col ${x + 1}").drop(initHeaders.size)
   val headerStrs = ObservableBuffer((initHeaders ++ headerfill): _*)
 
 
   def addRow(): Unit = {
-    if (vector.isEmpty)
-      addCol()
-    else
+
       data += GenericRow(Vector.fill(vector(0).rowValue.value.size)(""))
 
     refresh()
   }
 
   def addCol(): Unit = {
-    if (data.nonEmpty && data.headOption.exists(x => x.propVector.nonEmpty)) {
+
       for (row <- data) {
         row.addStr("")
-
       }
-    } else {
-      data ++= List(GenericRow(Vector("")))
-      println("bruh")
-    }
 
     //val uuscol = new TableColumn[GenericRow,String]()
     headerStrs.append(s"col ${headerStrs.size + 1}")
@@ -103,7 +103,7 @@ case class GenericTaulu(vector: Vector[GenericRow], initHeaders: Vector[String])
       }
       col.cellValueFactory = _.value.valueAt(colIndex)
       col.prefWidth = 85
-
+println(headerStrs)
 
       col.id = headerStrs(colIndex)
 
@@ -116,9 +116,9 @@ case class GenericTaulu(vector: Vector[GenericRow], initHeaders: Vector[String])
 
 
       stack.children.add(label)
-      if (stack.lookup("#stack > .label") != null) {
+/*      if (stack.lookup("#stack > .label") != null) {
         println(stack.lookup("#stack > .label").toString() + "löyty")
-      }
+      }*/
       table.setTableMenuButtonVisible(true)
 
 
@@ -178,7 +178,7 @@ case class GenericTaulu(vector: Vector[GenericRow], initHeaders: Vector[String])
           table.selectionModel.value.selectRange(0, col, table.items().size(), col)
           val tama = table.selectionModel.value
           table.selectionModel.update(tama)
-          table.refresh()
+           table.refresh()
           println(table.selectionModel.value.selectedCells)
 
         }

@@ -1,6 +1,7 @@
 package OS2
 
 import java.io._
+case class GenericTauluSerializable(vector: Vector[Vector[String]], initHeaders: Vector[String])
 
 object GenericTableConverter {
 
@@ -10,7 +11,11 @@ object GenericTableConverter {
   val EOF = "#EOF"
 
   def toFile(fileName: String, table: GenericTaulu) = {
-    val data = table.data.toVector
+    val ser = GenericTauluSerializable(table.data.toVector.map(_.rowValue.value.map(_.strValue.value)), table.headerStrs.toVector)
+    val oos = new ObjectOutputStream(new FileOutputStream(fileName))
+    oos.writeObject(ser)
+    oos.close
+    /*val data = table.data.toVector
     val headers = table.headerStrs.toVector
 
     try {
@@ -49,14 +54,17 @@ object GenericTableConverter {
     catch {
       case f: FileNotFoundException => println("file not found")
       case e: IOException => println("ioExeption")
-    }
+    }*/
   }
 
 
   def fromFile(polku: String): GenericTaulu = {
+    val ois = new ObjectInputStream(new FileInputStream(polku))
+    val table = ois.readObject.asInstanceOf[GenericTauluSerializable]
+    ois.close
+    GenericTaulu(table.vector.map(GenericRow(_)),table.initHeaders)
 
-
-    try {
+   /* try {
       val f = new FileReader(polku)
       val b = new BufferedReader(f)
       try {
@@ -141,7 +149,7 @@ object GenericTableConverter {
     catch {
       case f: FileNotFoundException => throw f
       case e: IOException => throw e
-    }
+    }*/
 
 
   }

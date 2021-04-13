@@ -5,10 +5,11 @@ import scalafx.application.JFXApp
 import scalafx.beans.property.DoubleProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.event.ActionEvent
+import scalafx.geometry.Orientation
 import scalafx.scene._
 import scalafx.scene.control._
 import scalafx.scene.layout._
-import scalafx.stage.FileChooser
+import scalafx.stage._
 
 object Appi extends JFXApp {
   stage = new JFXApp.PrimaryStage {
@@ -17,15 +18,26 @@ object Appi extends JFXApp {
     height = 700
   }
 
-  val root = new BorderPane {
+  val roott = new BorderPane {
     top = new MenuBar {
       val fileMenu = new Menu("File")
       val settings = new Menu("Settings")
       val viewMenu = new Menu("View")
 
-      val fileNew = new MenuItem("New")
-      fileNew.onAction = (e: ActionEvent) => {
-        tabit.tabs += new Tab
+      val fileNew = new Menu("New")
+      val fileNewTable = new MenuItem("Table")
+      val fileNewChatter = new MenuItem("Chatterchart")
+      fileNew.items = List(fileNewTable, fileNewChatter)
+      fileNewTable.onAction = (e: ActionEvent) => {
+        flowPane.children.add(GenericTaulu(Vector(), Vector()).table)
+      }
+      fileNewChatter.onAction = (e: ActionEvent) => {
+        println("bruh")
+        val popup = new Popup()
+        popup.setX(300)
+        popup.setY(300)
+        popup.content.add(GenericTaulu(Vector(), Vector()).table)
+        popup.show(stage)
       }
       val fileOpen = new MenuItem("Open")
       fileOpen.onAction = (e: ActionEvent) => {
@@ -36,7 +48,7 @@ object Appi extends JFXApp {
         curr.text = "New tabb"
         curr.content = GenericTableConverter.fromFile(selected.getAbsolutePath).table
 
-        tabit.tabs.add(curr)
+
         println(selected.toString)
       }
       val fileDelete = new MenuItem("Delete")
@@ -46,76 +58,41 @@ object Appi extends JFXApp {
       fileSave.onAction = (e: ActionEvent) => {
         val ch = new FileChooser
         val selected = ch.showOpenDialog(stage)
-        GenericTableConverter.toFile(selected.getAbsolutePath, t)
+        // GenericTableConverter.toFile(selected.getAbsolutePath, t)
         println(selected.toString)
       }
-
+val button = new MenuItem("print selected")
+      button.onAction = (e: ActionEvent) => {
+    println("scene: " + scene.value.focusOwnerProperty())
+      }
       fileMenu.items = List(
         fileNew,
         fileOpen,
         fileSave,
-        fileDelete
+        fileDelete,
+        button
       )
+
 
       menus = List(
         fileMenu,
         viewMenu,
         settings
+
       )
     }
-    val tabit = new TabPane
-    val tab1 = new Tab
-    val tab2 = new Tab
-    val tab3 = new Tab
-    val tab4 = new Tab
-    tab1.text = "table"
-    tab2.text = "chatter"
-    tab3.text = "line"
-    tab4.text = "printValues"
+    val scroll = new ScrollPane()
+    scroll.fitToHeight = true
+    scroll.fitToWidth = true
+    //ScrollPane.ScrollBarPolicy.Never
 
-
-    val testitab = new Tab
-
-    testitab.text = "testi"
-
-    val t = GenericTaulu(Vector(GenericRow(Vector(""))),Vector())
-
-    testitab.content = t.table
-
-
-
-    val s1 = Vector(10,11,12,13,14)
-      .zip(Vector(4,7,9,11,12))
-      .map(x => IntCell(x._1,x._2))
-
-    val t1 = Int2x("vuosi", "määrä", s1)
-
-    t1.table.editable = true
-    val b = new Button("printti")
-    b.onAction = e => t.data.foreach(x => println(x.propVector.map(_.strValue.value)))
-
-    tab1.content = t1.table
-
-
-    val lin = t1.line
-    val ch = t1.chatter
-    tab2.content = ch
-    tab3.content = lin
-    tab4.content = b
-
-
-    tabit.tabs = List(testitab, tab1, tab2, tab4 )
-
-
-    val scrolli = new ScrollPane
-
-
-    center = tabit
+    val flowPane = new FlowPane(Orientation.Horizontal)
+    scroll.content = flowPane
+    center = scroll
 
   }
 
-
-  val scene = new Scene(root)
+  val scene = new Scene(roott)
   stage.scene = scene
 
 }
