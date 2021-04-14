@@ -49,13 +49,14 @@ case class GenericTaulu(vector: Vector[GenericRow], initHeaders: Vector[String])
   val defaultcols = IntegerProperty(3)
   val defaultrows = IntegerProperty(5)
   val data: ObservableBuffer[GenericRow] = ObservableBuffer(vector: _*)
-  if (data.isEmpty){
+  if (data.isEmpty) {
     data ++= Vector.fill(defaultrows.value)(GenericRow(Vector.fill(defaultcols.value)("")))
   }
   val table = new TableView(data)
   table.userData = this
-table.prefHeight = 300d
+  table.prefHeight = 300d
   table.prefWidth = 250d
+
 
   val headerfill = Vector.tabulate(data.head.rowValue.value.size)(x => s"col ${x + 1}").drop(initHeaders.size)
   val headerStrs = ObservableBuffer((initHeaders ++ headerfill): _*)
@@ -63,18 +64,16 @@ table.prefHeight = 300d
 
   def addRow(): Unit = {
 
-      data += GenericRow(Vector.fill(vector(0).rowValue.value.size)(""))
+    data += GenericRow(Vector.fill(data(0).rowValue.value.size)(""))
 
     refresh()
   }
 
   def addCol(): Unit = {
 
-      for (row <- data) {
-        row.addStr("")
-      }
-
-    //val uuscol = new TableColumn[GenericRow,String]()
+    for (row <- data) {
+      row.addStr("")
+    }
     headerStrs.append(s"col ${headerStrs.size + 1}")
 
     refresh()
@@ -92,7 +91,6 @@ table.prefHeight = 300d
     }
     for (colIndex <- data(0).rowValue.value.indices) {
 
-
       val col = new TableColumn[GenericRow, String]()
 
       col.cellFactory = {
@@ -103,7 +101,7 @@ table.prefHeight = 300d
       }
       col.cellValueFactory = _.value.valueAt(colIndex)
       col.prefWidth = 85
-println(headerStrs)
+      println(headerStrs)
 
       col.id = headerStrs(colIndex)
 
@@ -116,9 +114,9 @@ println(headerStrs)
 
 
       stack.children.add(label)
-/*      if (stack.lookup("#stack > .label") != null) {
-        println(stack.lookup("#stack > .label").toString() + "löyty")
-      }*/
+      /*      if (stack.lookup("#stack > .label") != null) {
+              println(stack.lookup("#stack > .label").toString() + "löyty")
+            }*/
       table.setTableMenuButtonVisible(true)
 
 
@@ -178,7 +176,7 @@ println(headerStrs)
           table.selectionModel.value.selectRange(0, col, table.items().size(), col)
           val tama = table.selectionModel.value
           table.selectionModel.update(tama)
-           table.refresh()
+          table.refresh()
           println(table.selectionModel.value.selectedCells)
 
         }
