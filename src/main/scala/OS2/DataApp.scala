@@ -19,6 +19,7 @@ object Appi extends JFXApp {
     width = 1000
     height = 700
   }
+  val flowPane = new FlowPane(Orientation.Horizontal, 10d, 10d)
    val roott = new BorderPane()
   val scenee = new Scene(roott)
 
@@ -33,28 +34,21 @@ object Appi extends JFXApp {
       val fileNewChatter = new MenuItem("Chatterchart")
       fileNew.items = List(fileNewTable, fileNewChatter)
       fileNewTable.onAction = (e: ActionEvent) => {
-        val newTable = GenericTaulu(Vector(), Vector()).table
-        newTable.prefWidth <== (scroll.width / 3) - 30d
-        newTable.maxHeight = 100
+        val taulu = GenericTaulu(Vector(), Vector())
+        val newTable = taulu.table
+      val deletesYeetus = new MenuItem("Delete")
+      deletesYeetus.onAction = ((ae: ActionEvent) => {
+        val a = flowPane.children.removeAll(newTable)
+      })
+        taulu.cmenu.items.add(deletesYeetus)
+
         flowPane.children.add(newTable)
-/*        var curBox = vbox1
-        for(box <- vboxes)
-          {
-            if(box.children.size() < curBox.children.size()){
-              curBox = box
-            }
-          }
-        curBox.children.add(GenericTaulu(Vector(), Vector()).table)*/
+
       }
       fileNewChatter.onAction = (e: ActionEvent) => {
-        ChartValueChooser.popUpScene(scenee)
+        ChartValueChooser.popUpScene(scenee,flowPane)
 
- /*       println("bruh")
-        val popup = new Popup()
-        popup.setX(300)
-        popup.setY(300)
-        popup.content.add(GenericTaulu(Vector(), Vector()).table)
-        popup.show(stage)*/
+
       }
       val fileOpen = new MenuItem("Open")
       fileOpen.onAction = (e: ActionEvent) => {
@@ -109,7 +103,7 @@ val button = new MenuItem("print selected")
     val vboxes = List(vbox1,vbox2,vbox3)
     val hbox = new HBox()
     hbox.children = vboxes
-    val flowPane = new FlowPane(Orientation.Horizontal, 10d, 10d)
+
     scroll.content = flowPane
     roott.center = scroll
 
