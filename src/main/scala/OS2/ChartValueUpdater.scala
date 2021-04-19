@@ -1,6 +1,5 @@
 package OS2
 
-
 import javafx.collections.ListChangeListener
 import scalafx.collections._
 import scalafx.beans.property.ObjectProperty
@@ -18,13 +17,8 @@ import scalafx.scene.control.TableView
 import scalafx.stage.Stage
 import scalafx.geometry.Insets
 
-import javax.swing.event.{ChangeEvent, ChangeListener}
-
-
-object ChartValueChooser {
-
-
-  def popUpScene(originalScene: Scene, flowPane: FlowPane) = {
+object ChartValueUpdater {
+  def popUpScene(originalScene: Scene, numberChartObject: NumberChartObject) = {
     val stage = new Stage()
     stage.width = 400d
     stage.height = 500d
@@ -74,9 +68,9 @@ object ChartValueChooser {
     textYAxis.prefWidth <== listB.width
 
     textSeriesname.prefHeight = 35d
-    textXAxis.promptText = "X axis name"
-    textYAxis.promptText = "Y axis name"
-    textSeriesname.promptText = "Name of data"
+    textXAxis.text = numberChartObject.XAxisName.value
+    textYAxis.text = numberChartObject.YAxisName.value
+    textSeriesname.text = numberChartObject.dataSeries.name.value
     vbox1.children = List(listA, textXAxis, buttonA)
     vbox2.children = List(listB, textYAxis, buttonB)
     val sep = Separator(Orientation.Horizontal)
@@ -99,7 +93,7 @@ object ChartValueChooser {
     buttonA.onAction = (e: ActionEvent) => {
       textXAxis.disable = true
       buttonA.disable = true
-      println(positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]])
+      // println(positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]])
       XaxisVals = positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]].toVector
       // println("x: " + XaxisVals)
       //println("y: " + YaxisVals)
@@ -108,7 +102,7 @@ object ChartValueChooser {
     buttonB.onAction = (e: ActionEvent) => {
       textYAxis.disable = true
       buttonB.disable = true
-      println(positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]])
+      //  println(positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]])
       YaxisVals = positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]].toVector
 
       //println("x: " + XaxisVals)
@@ -117,47 +111,13 @@ object ChartValueChooser {
     }
     endButton.onAction = (e: ActionEvent) => {
       val data = new NumberChartObject(XaxisVals.toVector, YaxisVals.toVector)
-      data.dataSeries.name = textSeriesname.text.value
-      val S = Scatter(data)
-      S.titled.text = textSeriesname.text.value
-      S.xAxis.label = textXAxis.text.value
-      S.yAxis.label = textYAxis.text.value
-
-      val seriesAdderMenu = new MenuItem("Add new series")
-      seriesAdderMenu.onAction = (ae: ActionEvent) => {
-        ChartNewSeries.popUpScene(originalScene, S)
-      }
-
-      val SeriesUpdateMenu = new Menu("Update data")
-      for (obj <- S.objects) {
-        val menuitem = new MenuItem()
-        menuitem.text <== obj.dataSeries.name
-        menuitem.onAction = (ae: ActionEvent) => {
-          ChartValueUpdater.popUpScene(originalScene, obj)
-        }
-        SeriesUpdateMenu.items.addAll(menuitem)
-      }
-      S.objects.onChange({
-        SeriesUpdateMenu.items.clear()
-        for (obj <- S.objects) {
-          val menuitem = new MenuItem()
-          menuitem.text <== obj.dataSeries.name
-          menuitem.onAction = (ae: ActionEvent) => {
-            ChartValueUpdater.popUpScene(originalScene, obj)
-          }
-          SeriesUpdateMenu.items.addAll(menuitem)
-        }
-      })
+      numberChartObject.dataSeries.name = textSeriesname.text.value
+      numberChartObject.Xpositions.setAll(XaxisVals: _*)
+      numberChartObject.Ypositions.setAll(YaxisVals: _*)
 
 
-      val deletesYeetus = new MenuItem("Delete")
-      deletesYeetus.onAction = ((ae: ActionEvent) => {
-        val a = flowPane.children.removeAll(S.titled)
-      })
-
-      S.con.items.addAll(deletesYeetus, SeriesUpdateMenu, seriesAdderMenu)
-      flowPane.children.add(S.titled)
-
+      numberChartObject.XAxisName.value = textXAxis.text.value
+      numberChartObject.YAxisName.value = textYAxis.text.value
 
       stage.hide()
     }
@@ -216,4 +176,5 @@ object ChartValueChooser {
 
 
   }
+
 }

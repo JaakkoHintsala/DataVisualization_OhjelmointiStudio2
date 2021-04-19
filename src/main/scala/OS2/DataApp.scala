@@ -20,94 +20,92 @@ object Appi extends JFXApp {
     height = 700
   }
   val flowPane = new FlowPane(Orientation.Horizontal, 10d, 10d)
-   val roott = new BorderPane()
+  val roott = new BorderPane()
   val scenee = new Scene(roott)
 
 
-    roott.top = new MenuBar {
-      val fileMenu = new Menu("File")
-      val settings = new Menu("Settings")
-      val viewMenu = new Menu("View")
+  roott.top = new MenuBar {
+    val fileMenu = new Menu("File")
+    val settings = new Menu("Settings")
+    val viewMenu = new Menu("View")
 
-      val fileNew = new Menu("New")
-      val fileNewTable = new MenuItem("Table")
-      val fileNewChatter = new MenuItem("Chatterchart")
-      fileNew.items = List(fileNewTable, fileNewChatter)
-      fileNewTable.onAction = (e: ActionEvent) => {
-        val taulu = GenericTaulu(Vector(), Vector())
-        val newTable = taulu.table
+    val fileNew = new Menu("New")
+    val fileNewTable = new MenuItem("Table")
+    val fileNewChatter = new MenuItem("Chatterchart")
+    fileNew.items = List(fileNewTable, fileNewChatter)
+    fileNewTable.onAction = (e: ActionEvent) => {
+      val taulu = GenericTaulu(Vector(), Vector())
+      val newTable = taulu.table
       val deletesYeetus = new MenuItem("Delete")
       deletesYeetus.onAction = ((ae: ActionEvent) => {
         val a = flowPane.children.removeAll(newTable)
       })
-        taulu.cmenu.items.add(deletesYeetus)
+      taulu.cmenu.items.add(deletesYeetus)
 
-        flowPane.children.add(newTable)
+      flowPane.children.add(newTable)
 
-      }
-      fileNewChatter.onAction = (e: ActionEvent) => {
-        ChartValueChooser.popUpScene(scenee,flowPane)
-
-
-      }
-      val fileOpen = new MenuItem("Open")
-      fileOpen.onAction = (e: ActionEvent) => {
-        val ch = new FileChooser
-        val selected = ch.showOpenDialog(stage)
-
-        val curr = new Tab()
-        curr.text = "New tabb"
-        curr.content = GenericTableConverter.fromFile(selected.getAbsolutePath).table
-
-
-        println(selected.toString)
-      }
-      val fileDelete = new MenuItem("Delete")
-
-      val fileSave = new MenuItem("Save")
-
-      fileSave.onAction = (e: ActionEvent) => {
-        val ch = new FileChooser
-        val selected = ch.showOpenDialog(stage)
-        // GenericTableConverter.toFile(selected.getAbsolutePath, t)
-        println(selected.toString)
-      }
-val button = new MenuItem("print selected")
-      button.onAction = (e: ActionEvent) => {
-    println("scene: " + scene.value.focusOwnerProperty())
-      }
-      fileMenu.items = List(
-        fileNew,
-        fileOpen,
-        fileSave,
-        fileDelete,
-        button
-      )
-
-
-      menus = List(
-        fileMenu,
-        viewMenu,
-        settings
-
-      )
     }
-    val scroll = new ScrollPane()
-    scroll.fitToHeight = true
-    scroll.fitToWidth = true
-    //ScrollPane.ScrollBarPolicy.Never
-
-    val vbox1  = new VBox()
-    val vbox2  = new VBox()
-    val vbox3  = new VBox()
-    val vboxes = List(vbox1,vbox2,vbox3)
-    val hbox = new HBox()
-    hbox.children = vboxes
-
-    scroll.content = flowPane
-    roott.center = scroll
+    fileNewChatter.onAction = (e: ActionEvent) => {
+      ChartValueChooser.popUpScene(scenee, flowPane)
 
 
+    }
+    val fileOpen = new MenuItem("Open")
+    fileOpen.onAction = (e: ActionEvent) => {
+      val ch = new FileChooser
+      val selected = ch.showOpenDialog(stage)
+
+      val curr = new Tab()
+      curr.text = "New tabb"
+      curr.content = GenericTableConverter.fromFile(selected.getAbsolutePath).table
+
+
+      println(selected.toString)
+    }
+    val fileDelete = new MenuItem("Delete")
+
+    val fileSave = new MenuItem("Save")
+
+    fileSave.onAction = (e: ActionEvent) => {
+      val ch = new FileChooser
+      val selected = ch.showOpenDialog(stage)
+      // GenericTableConverter.toFile(selected.getAbsolutePath, t)
+      println(selected.toString)
+    }
+    val button = new MenuItem("print selected")
+    button.onAction = (e: ActionEvent) => {
+      println("scene: " + scene.value.focusOwnerProperty())
+    }
+    fileMenu.items = List(
+      fileNew,
+      fileOpen,
+      fileSave,
+      fileDelete,
+      button
+    )
+
+
+    menus = List(
+      fileMenu,
+      viewMenu,
+      settings
+
+    )
+  }
+  val scroll = new ScrollPane()
+  scroll.fitToHeight = true
+  scroll.fitToWidth = true
+  //ScrollPane.ScrollBarPolicy.Never
+
+  val vbox1 = new VBox()
+  val vbox2 = new VBox()
+  val vbox3 = new VBox()
+  val vboxes = List(vbox1, vbox2, vbox3)
+  val hbox = new HBox()
+  hbox.children = vboxes
+
+  scroll.content = flowPane
+  roott.center = scroll
 
 
   stage.scene = scenee
