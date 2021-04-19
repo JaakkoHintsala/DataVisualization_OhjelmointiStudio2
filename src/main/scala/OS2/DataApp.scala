@@ -32,7 +32,12 @@ object Appi extends JFXApp {
     val fileNew = new Menu("New")
     val fileNewTable = new MenuItem("Table")
     val fileNewChatter = new MenuItem("Chatterchart")
-    fileNew.items = List(fileNewTable, fileNewChatter)
+    val fileNewLine = new MenuItem("Linechart")
+    val fileNewBar = new MenuItem("Barchart")
+    val fileNewPie = new MenuItem("Piechart")
+
+    fileNew.items = List(fileNewTable, fileNewChatter, fileNewLine, fileNewBar, fileNewPie)
+
     fileNewTable.onAction = (e: ActionEvent) => {
       val taulu = GenericTaulu(Vector(), Vector())
       val newTable = taulu.table
@@ -40,15 +45,22 @@ object Appi extends JFXApp {
       deletesYeetus.onAction = ((ae: ActionEvent) => {
         val a = flowPane.children.removeAll(newTable)
       })
-      taulu.cmenu.items.add(deletesYeetus)
 
+      taulu.cmenu.items.add(deletesYeetus)
       flowPane.children.add(newTable)
 
     }
     fileNewChatter.onAction = (e: ActionEvent) => {
-      ChartValueChooser.popUpScene(scenee, flowPane)
-
-
+      ChartValueChooser.popUpSceneScatter(scenee, flowPane)
+    }
+    fileNewLine.onAction = (e: ActionEvent) => {
+      ChartValueChooser.popUpSceneLine(scenee, flowPane)
+    }
+    fileNewBar.onAction = (e: ActionEvent) => {
+      ChartValueChooser.popUpSceneBar(scenee, flowPane)
+    }
+    fileNewPie.onAction = (e: ActionEvent) => {
+      ChartValueChooser.popUpScenePie(scenee, flowPane)
     }
     val fileOpen = new MenuItem("Open")
     fileOpen.onAction = (e: ActionEvent) => {

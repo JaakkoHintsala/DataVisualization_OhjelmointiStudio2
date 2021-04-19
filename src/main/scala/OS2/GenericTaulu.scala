@@ -146,8 +146,11 @@ case class GenericTaulu(vector: Vector[GenericRow], initHeaders: Vector[String])
 
       stack.filterEvent(MouseEvent.MousePressed) {
         me: MouseEvent => {
-          println("stack click")
-          table.selectionModel.value.clearSelection()
+
+          if (!me.controlDown && me.primaryButtonDown)
+            table.selectionModel.value.clearSelection()
+
+
           if (me.controlDown) {
             table.selectionModel.value.selectRange(0, col, table.items().size(), col)
             label.requestFocus() // refresh for chartValueChooser
@@ -267,7 +270,7 @@ case class GenericTaulu(vector: Vector[GenericRow], initHeaders: Vector[String])
       addCol()
     }
   }
-    val row5menu = new MenuItem("Add 5 rows")
+  val row5menu = new MenuItem("Add 5 rows")
   row5menu.onAction = {
     e: ActionEvent => {
       add5Row()
@@ -305,7 +308,7 @@ case class GenericTaulu(vector: Vector[GenericRow], initHeaders: Vector[String])
     table.maxHeight = table.height.value * 0.7
     table.minHeight = table.height.value * 0.7
   }
-  cmenu.items ++= List(rowmenu,row5menu, colmenu, col5menu, item1, item2)
+  cmenu.items ++= List(rowmenu, row5menu, colmenu, col5menu, item1, item2)
   table.contextMenu = cmenu
   // table.contextMenu = cmenu
   // table.filterEvent()

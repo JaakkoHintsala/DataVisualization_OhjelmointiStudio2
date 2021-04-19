@@ -24,7 +24,7 @@ import javax.swing.event.{ChangeEvent, ChangeListener}
 object ChartValueChooser {
 
 
-  def popUpScene(originalScene: Scene, flowPane: FlowPane) = {
+  def popUpSceneScatter(originalScene: Scene, flowPane: FlowPane) = {
     val stage = new Stage()
     stage.width = 400d
     stage.height = 500d
@@ -118,7 +118,7 @@ object ChartValueChooser {
     endButton.onAction = (e: ActionEvent) => {
       val data = new NumberChartObject(XaxisVals.toVector, YaxisVals.toVector)
       data.dataSeries.name = textSeriesname.text.value
-      val S = Scatter(data)
+      val S = new Scatter(data)
       S.titled.text = textSeriesname.text.value
       S.xAxis.label = textXAxis.text.value
       S.yAxis.label = textYAxis.text.value
@@ -133,7 +133,7 @@ object ChartValueChooser {
         val menuitem = new MenuItem()
         menuitem.text <== obj.dataSeries.name
         menuitem.onAction = (ae: ActionEvent) => {
-          ChartValueUpdater.popUpScene(originalScene, obj)
+          ChartValueUpdater.popUpSceneNumber(originalScene, obj)
         }
         SeriesUpdateMenu.items.addAll(menuitem)
       }
@@ -143,7 +143,7 @@ object ChartValueChooser {
           val menuitem = new MenuItem()
           menuitem.text <== obj.dataSeries.name
           menuitem.onAction = (ae: ActionEvent) => {
-            ChartValueUpdater.popUpScene(originalScene, obj)
+            ChartValueUpdater.popUpSceneNumber(originalScene, obj)
           }
           SeriesUpdateMenu.items.addAll(menuitem)
         }
@@ -156,6 +156,569 @@ object ChartValueChooser {
       })
 
       S.con.items.addAll(deletesYeetus, SeriesUpdateMenu, seriesAdderMenu)
+      flowPane.children.add(S.titled)
+
+
+      stage.hide()
+    }
+
+
+    if (originalScene.getFocusOwner != null && originalScene.getFocusOwner.getClass.getSimpleName == "TableView") {
+      positions.setAll(originalScene.getFocusOwner.asInstanceOf[javafx.scene.control.TableView[GenericRow]].getSelectionModel.getSelectedCells.toVector: _*)
+      selections = originalScene.getFocusOwner.asInstanceOf[javafx.scene.control.TableView[GenericRow]].selectionModel
+
+      selections.value.getSelectedCells.onChange({
+
+        val c = ObservableBuffer(selections.value.getSelectedCells.toVector)
+        val diff = c -- positions
+        val b = positions.retainAll(c.toVector)
+        val d = positions.addAll(diff)
+
+      })
+    }
+
+    originalScene.focusOwnerProperty().onChange((obs, oldV, newV) => {
+      if (newV != null) {
+        newV.getClass.getSimpleName match {
+          case "TableView" => {
+
+            val t = newV.asInstanceOf[javafx.scene.control.TableView[GenericRow]]
+            selections = t.selectionModel
+
+
+            val cc = ObservableBuffer(t.getSelectionModel.getSelectedCells.toVector)
+
+            val diff = cc -- positions
+            val bb = positions.retainAll(cc.toVector)
+            val d = positions.addAll(diff)
+
+            println(t.getSelectionModel)
+
+            t.getSelectionModel.getSelectedCells.onChange({
+
+              val ccc = ObservableBuffer(t.getSelectionModel.getSelectedCells.toVector)
+              val difff = ccc -- positions
+              val bbb = positions.retainAll(ccc.toVector)
+              val dd = positions.addAll(difff)
+
+            })
+
+
+          }
+          case _ => {}
+        }
+      }
+    })
+
+
+    stage.scene = newScene
+    stage.show()
+
+
+  }
+
+  def popUpSceneLine(originalScene: Scene, flowPane: FlowPane) = {
+    val stage = new Stage()
+    stage.width = 400d
+    stage.height = 500d
+    stage.alwaysOnTop = true
+    val scenePane = new ScrollPane()
+    val newScene = new Scene(scenePane)
+    scenePane.fitToWidth = true
+    val hboxParent = new HBox()
+    val endButton = new Button("Make chart")
+    val realParent = new VBox()
+    realParent.spacing = 10d
+    endButton.prefWidth <== scenePane.width / 3
+    endButton.prefHeight = 40d
+    realParent.alignment = scalafx.geometry.Pos.TopCenter
+    realParent.children = List(hboxParent, endButton)
+    scenePane.content = realParent
+    val vbox1 = new VBox()
+    val vbox2 = new VBox()
+    hboxParent.children.addAll(vbox1, vbox2)
+    hboxParent.spacing = 20d
+    vbox1.spacing = 10d
+    vbox2.spacing = 10d
+    vbox1.fillWidth = true
+    vbox1.alignment = scalafx.geometry.Pos.TopCenter
+    vbox2.alignment = scalafx.geometry.Pos.TopCenter
+
+    val placeHolder1 = new Label("Nothing selected")
+    val placeHolder2 = new Label("Nothing selected")
+    val listA = new ListView[String]()
+    val listB = new ListView[String]()
+    val buttonA = new Button("Confirm selection")
+    val buttonB = new Button("Confirm selection")
+    var XaxisVals = Vector[javafx.scene.control.TablePosition[GenericRow, String]]()
+    var YaxisVals = Vector[javafx.scene.control.TablePosition[GenericRow, String]]()
+    listA.placeholder = placeHolder1
+    listB.placeholder = placeHolder2
+    listA.prefWidth <== scenePane.width / 2
+    listB.prefWidth <== scenePane.width / 2
+    listA.prefHeight <== scenePane.height - 195d
+    listB.prefHeight <== scenePane.height - 195d
+    val textXAxis = new TextField()
+    val textYAxis = new TextField()
+    val textSeriesname = new TextField()
+
+
+    textXAxis.prefWidth <== listA.width
+    textYAxis.prefWidth <== listB.width
+
+    textSeriesname.prefHeight = 35d
+    textXAxis.promptText = "X axis name"
+    textYAxis.promptText = "Y axis name"
+    textSeriesname.promptText = "Name of data"
+    vbox1.children = List(listA, textXAxis, buttonA)
+    vbox2.children = List(listB, textYAxis, buttonB)
+    val sep = Separator(Orientation.Horizontal)
+    realParent.children = List(hboxParent, sep, textSeriesname, endButton)
+
+
+    var selections = new ObjectProperty(this, "bruh", null: javafx.scene.control.TableView.TableViewSelectionModel[GenericRow])
+    var positions = ObservableBuffer[javafx.scene.control.TablePosition[_, _]]()
+    positions.onChange({
+      if (!buttonA.disabled.value) {
+        listA.items = positions.map(x => x.getTableColumn.getCellData(x.getRow).asInstanceOf[String])
+      }
+      else if (!buttonB.disabled.value) {
+        listB.items = positions.map(x => x.getTableColumn.getCellData(x.getRow).asInstanceOf[String])
+      }
+
+    })
+
+
+    buttonA.onAction = (e: ActionEvent) => {
+      textXAxis.disable = true
+      buttonA.disable = true
+      println(positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]])
+      XaxisVals = positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]].toVector
+      // println("x: " + XaxisVals)
+      //println("y: " + YaxisVals)
+      scenePane.requestFocus()
+    }
+    buttonB.onAction = (e: ActionEvent) => {
+      textYAxis.disable = true
+      buttonB.disable = true
+      println(positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]])
+      YaxisVals = positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]].toVector
+
+      //println("x: " + XaxisVals)
+      //println("y: " + YaxisVals)
+      scenePane.requestFocus()
+    }
+    endButton.onAction = (e: ActionEvent) => {
+      val data = new NumberChartObject(XaxisVals.toVector, YaxisVals.toVector)
+      data.dataSeries.name = textSeriesname.text.value
+      val S = new Line(data)
+      S.titled.text = textSeriesname.text.value
+      S.xAxis.label = textXAxis.text.value
+      S.yAxis.label = textYAxis.text.value
+
+      val seriesAdderMenu = new MenuItem("Add new series")
+      seriesAdderMenu.onAction = (ae: ActionEvent) => {
+        ChartNewSeries.popUpScene(originalScene, S)
+      }
+
+      val SeriesUpdateMenu = new Menu("Update data")
+      for (obj <- S.objects) {
+        val menuitem = new MenuItem()
+        menuitem.text <== obj.dataSeries.name
+        menuitem.onAction = (ae: ActionEvent) => {
+          ChartValueUpdater.popUpSceneNumber(originalScene, obj)
+        }
+        SeriesUpdateMenu.items.addAll(menuitem)
+      }
+      S.objects.onChange({
+        SeriesUpdateMenu.items.clear()
+        for (obj <- S.objects) {
+          val menuitem = new MenuItem()
+          menuitem.text <== obj.dataSeries.name
+          menuitem.onAction = (ae: ActionEvent) => {
+            ChartValueUpdater.popUpSceneNumber(originalScene, obj)
+          }
+          SeriesUpdateMenu.items.addAll(menuitem)
+        }
+      })
+
+
+      val deletesYeetus = new MenuItem("Delete")
+      deletesYeetus.onAction = ((ae: ActionEvent) => {
+        val a = flowPane.children.removeAll(S.titled)
+      })
+
+      S.con.items.addAll(deletesYeetus, SeriesUpdateMenu, seriesAdderMenu)
+      flowPane.children.add(S.titled)
+
+
+      stage.hide()
+    }
+
+
+    if (originalScene.getFocusOwner != null && originalScene.getFocusOwner.getClass.getSimpleName == "TableView") {
+      positions.setAll(originalScene.getFocusOwner.asInstanceOf[javafx.scene.control.TableView[GenericRow]].getSelectionModel.getSelectedCells.toVector: _*)
+      selections = originalScene.getFocusOwner.asInstanceOf[javafx.scene.control.TableView[GenericRow]].selectionModel
+
+      selections.value.getSelectedCells.onChange({
+
+        val c = ObservableBuffer(selections.value.getSelectedCells.toVector)
+        val diff = c -- positions
+        val b = positions.retainAll(c.toVector)
+        val d = positions.addAll(diff)
+
+      })
+    }
+
+    originalScene.focusOwnerProperty().onChange((obs, oldV, newV) => {
+      if (newV != null) {
+        newV.getClass.getSimpleName match {
+          case "TableView" => {
+
+            val t = newV.asInstanceOf[javafx.scene.control.TableView[GenericRow]]
+            selections = t.selectionModel
+
+
+            val cc = ObservableBuffer(t.getSelectionModel.getSelectedCells.toVector)
+
+            val diff = cc -- positions
+            val bb = positions.retainAll(cc.toVector)
+            val d = positions.addAll(diff)
+
+            println(t.getSelectionModel)
+
+            t.getSelectionModel.getSelectedCells.onChange({
+
+              val ccc = ObservableBuffer(t.getSelectionModel.getSelectedCells.toVector)
+              val difff = ccc -- positions
+              val bbb = positions.retainAll(ccc.toVector)
+              val dd = positions.addAll(difff)
+
+            })
+
+
+          }
+          case _ => {}
+        }
+      }
+    })
+
+
+    stage.scene = newScene
+    stage.show()
+
+
+  }
+
+  def popUpSceneBar(originalScene: Scene, flowPane: FlowPane) = {
+    val stage = new Stage()
+    stage.width = 400d
+    stage.height = 500d
+    stage.alwaysOnTop = true
+    val scenePane = new ScrollPane()
+    val newScene = new Scene(scenePane)
+    scenePane.fitToWidth = true
+    val hboxParent = new HBox()
+    val endButton = new Button("Make chart")
+    val realParent = new VBox()
+    realParent.spacing = 10d
+    endButton.prefWidth <== scenePane.width / 3
+    endButton.prefHeight = 40d
+    realParent.alignment = scalafx.geometry.Pos.TopCenter
+    realParent.children = List(hboxParent, endButton)
+    scenePane.content = realParent
+    val vbox1 = new VBox()
+    val vbox2 = new VBox()
+    hboxParent.children.addAll(vbox1, vbox2)
+    hboxParent.spacing = 20d
+    vbox1.spacing = 10d
+    vbox2.spacing = 10d
+    vbox1.fillWidth = true
+    vbox1.alignment = scalafx.geometry.Pos.TopCenter
+    vbox2.alignment = scalafx.geometry.Pos.TopCenter
+
+    val placeHolder1 = new Label("Nothing selected")
+    val placeHolder2 = new Label("Nothing selected")
+    val listA = new ListView[String]()
+    val listB = new ListView[String]()
+    val buttonA = new Button("Confirm selection")
+    val buttonB = new Button("Confirm selection")
+    var XaxisVals = Vector[javafx.scene.control.TablePosition[GenericRow, String]]()
+    var YaxisVals = Vector[javafx.scene.control.TablePosition[GenericRow, String]]()
+    listA.placeholder = placeHolder1
+    listB.placeholder = placeHolder2
+    listA.prefWidth <== scenePane.width / 2
+    listB.prefWidth <== scenePane.width / 2
+    listA.prefHeight <== scenePane.height - 195d
+    listB.prefHeight <== scenePane.height - 195d
+    val textXAxis = new TextField()
+    val textYAxis = new TextField()
+    val textSeriesname = new TextField()
+
+
+    textXAxis.prefWidth <== listA.width
+    textYAxis.prefWidth <== listB.width
+
+    textSeriesname.prefHeight = 35d
+    textXAxis.promptText = "X axis name"
+    textYAxis.promptText = "Y axis name"
+    textSeriesname.promptText = "Name of data"
+    vbox1.children = List(listA, textXAxis, buttonA)
+    vbox2.children = List(listB, textYAxis, buttonB)
+    val sep = Separator(Orientation.Horizontal)
+    realParent.children = List(hboxParent, sep, textSeriesname, endButton)
+
+
+    var selections = new ObjectProperty(this, "bruh", null: javafx.scene.control.TableView.TableViewSelectionModel[GenericRow])
+    var positions = ObservableBuffer[javafx.scene.control.TablePosition[_, _]]()
+    positions.onChange({
+      if (!buttonA.disabled.value) {
+        listA.items = positions.map(x => x.getTableColumn.getCellData(x.getRow).asInstanceOf[String])
+      }
+      else if (!buttonB.disabled.value) {
+        listB.items = positions.map(x => x.getTableColumn.getCellData(x.getRow).asInstanceOf[String])
+      }
+
+    })
+
+
+    buttonA.onAction = (e: ActionEvent) => {
+      textXAxis.disable = true
+      buttonA.disable = true
+      println(positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]])
+      XaxisVals = positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]].toVector
+      // println("x: " + XaxisVals)
+      //println("y: " + YaxisVals)
+      scenePane.requestFocus()
+    }
+    buttonB.onAction = (e: ActionEvent) => {
+      textYAxis.disable = true
+      buttonB.disable = true
+      println(positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]])
+      YaxisVals = positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]].toVector
+
+      //println("x: " + XaxisVals)
+      //println("y: " + YaxisVals)
+      scenePane.requestFocus()
+    }
+    endButton.onAction = (e: ActionEvent) => {
+      val data = new StringNumberChartObject(XaxisVals.toVector, YaxisVals.toVector)
+      data.dataSeries.name = textSeriesname.text.value
+      val S = new Bar(data)
+      S.titled.text = textSeriesname.text.value
+      S.xAxis.label = textXAxis.text.value
+      S.yAxis.label = textYAxis.text.value
+
+      val seriesAdderMenu = new MenuItem("Add new series")
+      seriesAdderMenu.onAction = (ae: ActionEvent) => {
+        ChartNewSeries.popUpSceneBar(originalScene, S)
+      }
+
+      val SeriesUpdateMenu = new Menu("Update data")
+      for (obj <- S.objects) {
+        val menuitem = new MenuItem()
+        menuitem.text <== obj.dataSeries.name
+        menuitem.onAction = (ae: ActionEvent) => {
+          ChartValueUpdater.popUpSceneStringNumber(originalScene, obj)
+        }
+        SeriesUpdateMenu.items.addAll(menuitem)
+      }
+      S.objects.onChange({
+        SeriesUpdateMenu.items.clear()
+        for (obj <- S.objects) {
+          val menuitem = new MenuItem()
+          menuitem.text <== obj.dataSeries.name
+          menuitem.onAction = (ae: ActionEvent) => {
+            ChartValueUpdater.popUpSceneStringNumber(originalScene, obj)
+          }
+          SeriesUpdateMenu.items.addAll(menuitem)
+        }
+      })
+
+
+      val deletesYeetus = new MenuItem("Delete")
+      deletesYeetus.onAction = ((ae: ActionEvent) => {
+        val a = flowPane.children.removeAll(S.titled)
+      })
+
+      S.con.items.addAll(deletesYeetus, SeriesUpdateMenu, seriesAdderMenu)
+      flowPane.children.add(S.titled)
+
+
+      stage.hide()
+    }
+
+
+    if (originalScene.getFocusOwner != null && originalScene.getFocusOwner.getClass.getSimpleName == "TableView") {
+      positions.setAll(originalScene.getFocusOwner.asInstanceOf[javafx.scene.control.TableView[GenericRow]].getSelectionModel.getSelectedCells.toVector: _*)
+      selections = originalScene.getFocusOwner.asInstanceOf[javafx.scene.control.TableView[GenericRow]].selectionModel
+
+      selections.value.getSelectedCells.onChange({
+
+        val c = ObservableBuffer(selections.value.getSelectedCells.toVector)
+        val diff = c -- positions
+        val b = positions.retainAll(c.toVector)
+        val d = positions.addAll(diff)
+
+      })
+    }
+
+    originalScene.focusOwnerProperty().onChange((obs, oldV, newV) => {
+      if (newV != null) {
+        newV.getClass.getSimpleName match {
+          case "TableView" => {
+
+            val t = newV.asInstanceOf[javafx.scene.control.TableView[GenericRow]]
+            selections = t.selectionModel
+
+
+            val cc = ObservableBuffer(t.getSelectionModel.getSelectedCells.toVector)
+
+            val diff = cc -- positions
+            val bb = positions.retainAll(cc.toVector)
+            val d = positions.addAll(diff)
+
+            println(t.getSelectionModel)
+
+            t.getSelectionModel.getSelectedCells.onChange({
+
+              val ccc = ObservableBuffer(t.getSelectionModel.getSelectedCells.toVector)
+              val difff = ccc -- positions
+              val bbb = positions.retainAll(ccc.toVector)
+              val dd = positions.addAll(difff)
+
+            })
+
+
+          }
+          case _ => {}
+        }
+      }
+    })
+
+
+    stage.scene = newScene
+    stage.show()
+
+
+  }
+
+  def popUpScenePie(originalScene: Scene, flowPane: FlowPane) = {
+    val stage = new Stage()
+    stage.width = 400d
+    stage.height = 500d
+    stage.alwaysOnTop = true
+    val scenePane = new ScrollPane()
+    val newScene = new Scene(scenePane)
+    scenePane.fitToWidth = true
+    val hboxParent = new HBox()
+    val endButton = new Button("Make chart")
+    val realParent = new VBox()
+    realParent.spacing = 10d
+    endButton.prefWidth <== scenePane.width / 3
+    endButton.prefHeight = 40d
+    realParent.alignment = scalafx.geometry.Pos.TopCenter
+    realParent.children = List(hboxParent, endButton)
+    scenePane.content = realParent
+    val vbox1 = new VBox()
+    val vbox2 = new VBox()
+    hboxParent.children.addAll(vbox1, vbox2)
+    hboxParent.spacing = 20d
+    vbox1.spacing = 10d
+    vbox2.spacing = 10d
+    vbox1.fillWidth = true
+    vbox1.alignment = scalafx.geometry.Pos.TopCenter
+    vbox2.alignment = scalafx.geometry.Pos.TopCenter
+
+    val placeHolder1 = new Label("Nothing selected")
+    val placeHolder2 = new Label("Nothing selected")
+    val listA = new ListView[String]()
+    val listB = new ListView[String]()
+    val buttonA = new Button("Confirm selection")
+    val buttonB = new Button("Confirm selection")
+    var XaxisVals = Vector[javafx.scene.control.TablePosition[GenericRow, String]]()
+    var YaxisVals = Vector[javafx.scene.control.TablePosition[GenericRow, String]]()
+    listA.placeholder = placeHolder1
+    listB.placeholder = placeHolder2
+    listA.prefWidth <== scenePane.width / 2
+    listB.prefWidth <== scenePane.width / 2
+    listA.prefHeight <== scenePane.height - 195d
+    listB.prefHeight <== scenePane.height - 195d
+    val textXAxis = new TextField()
+    val textYAxis = new TextField()
+    val textSeriesname = new TextField()
+
+
+    textXAxis.prefWidth <== listA.width
+    textYAxis.prefWidth <== listB.width
+
+    textSeriesname.prefHeight = 35d
+    textXAxis.promptText = "X axis name"
+    textYAxis.promptText = "Y axis name"
+    textSeriesname.promptText = "Name of data"
+    vbox1.children = List(listA, textXAxis, buttonA)
+    vbox2.children = List(listB, textYAxis, buttonB)
+    val sep = Separator(Orientation.Horizontal)
+    realParent.children = List(hboxParent, sep, textSeriesname, endButton)
+
+
+    var selections = new ObjectProperty(this, "bruh", null: javafx.scene.control.TableView.TableViewSelectionModel[GenericRow])
+    var positions = ObservableBuffer[javafx.scene.control.TablePosition[_, _]]()
+    positions.onChange({
+      if (!buttonA.disabled.value) {
+        listA.items = positions.map(x => x.getTableColumn.getCellData(x.getRow).asInstanceOf[String])
+      }
+      else if (!buttonB.disabled.value) {
+        listB.items = positions.map(x => x.getTableColumn.getCellData(x.getRow).asInstanceOf[String])
+      }
+
+    })
+
+
+    buttonA.onAction = (e: ActionEvent) => {
+      textXAxis.disable = true
+      buttonA.disable = true
+      println(positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]])
+      XaxisVals = positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]].toVector
+      // println("x: " + XaxisVals)
+      //println("y: " + YaxisVals)
+      scenePane.requestFocus()
+    }
+    buttonB.onAction = (e: ActionEvent) => {
+      textYAxis.disable = true
+      buttonB.disable = true
+      println(positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]])
+      YaxisVals = positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]].toVector
+
+      //println("x: " + XaxisVals)
+      //println("y: " + YaxisVals)
+      scenePane.requestFocus()
+    }
+    endButton.onAction = (e: ActionEvent) => {
+      val data = new PieChartObject(XaxisVals.toVector, YaxisVals.toVector)
+      data.dataSeries.name = textSeriesname.text.value
+      val S = new Pie(data)
+      S.titled.text = textSeriesname.text.value
+      S.xAxis.label = textXAxis.text.value
+      S.yAxis.label = textYAxis.text.value
+
+
+      val SeriesUpdateMenu = new Menu("Update data")
+
+      val menuitem = new MenuItem()
+      menuitem.text <== data.dataSeries.name
+      menuitem.onAction = (ae: ActionEvent) => {
+        ChartValueUpdater.popUpSceneStringNumber(originalScene, data)
+      }
+      SeriesUpdateMenu.items.addAll(menuitem)
+
+
+      val deletesYeetus = new MenuItem("Delete")
+      deletesYeetus.onAction = ((ae: ActionEvent) => {
+        val a = flowPane.children.removeAll(S.titled)
+      })
+
+      S.con.items.addAll(deletesYeetus, SeriesUpdateMenu)
       flowPane.children.add(S.titled)
 
 
