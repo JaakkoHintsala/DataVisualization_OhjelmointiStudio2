@@ -124,6 +124,30 @@ object ChartValueChooser {
       S.titled.text = textSeriesname.text.value
       S.xAxis.label = textXAxis.text.value
       S.yAxis.label = textYAxis.text.value
+      data.YAxisName.value = textXAxis.text.value
+      data.YAxisName.value = textYAxis.text.value
+
+
+
+      data.XAxisName.onChange({
+        println("Xchooser")
+        S.xAxis.label = data.XAxisName.value
+
+       val a =  S.objects.foreach(x => {
+         if(x.XAxisName.value != data.XAxisName.value){
+           x.XAxisName.value = data.XAxisName.value
+         }
+       })
+      })
+      data.YAxisName.onChange({
+        println("Ychooser")
+        S.yAxis.label = data.YAxisName.value
+       val a =  S.objects.foreach(x => {
+         if(x.YAxisName.value != data.YAxisName.value){
+           x.YAxisName.value = data.YAxisName.value
+         }
+       })
+      })
 
       val seriesAdderMenu = new MenuItem("Add new series")
       seriesAdderMenu.onAction = (ae: ActionEvent) => {
@@ -317,6 +341,30 @@ object ChartValueChooser {
       S.titled.text = textSeriesname.text.value
       S.xAxis.label = textXAxis.text.value
       S.yAxis.label = textYAxis.text.value
+      data.YAxisName.value = textXAxis.text.value
+      data.YAxisName.value = textYAxis.text.value
+
+
+
+      data.XAxisName.onChange({
+        println("Xchooser")
+        S.xAxis.label = data.XAxisName.value
+
+       val a =  S.objects.foreach(x => {
+         if(x.XAxisName.value != data.XAxisName.value){
+           x.XAxisName.value = data.XAxisName.value
+         }
+       })
+      })
+      data.YAxisName.onChange({
+        println("Ychooser")
+        S.yAxis.label = data.YAxisName.value
+       val a =  S.objects.foreach(x => {
+         if(x.YAxisName.value != data.YAxisName.value){
+           x.YAxisName.value = data.YAxisName.value
+         }
+       })
+      })
 
       val seriesAdderMenu = new MenuItem("Add new series")
       seriesAdderMenu.onAction = (ae: ActionEvent) => {
@@ -408,6 +456,7 @@ object ChartValueChooser {
 
     stage.scene = newScene
     stage.show()
+
 
 
   }
@@ -510,6 +559,30 @@ object ChartValueChooser {
       S.titled.text = textSeriesname.text.value
       S.xAxis.label = textXAxis.text.value
       S.yAxis.label = textYAxis.text.value
+      data.YAxisName.value = textXAxis.text.value
+      data.YAxisName.value = textYAxis.text.value
+
+
+
+      data.XAxisName.onChange({
+        println("Xchooser")
+        S.xAxis.label = data.XAxisName.value
+
+       val a =  S.objects.foreach(x => {
+         if(x.XAxisName.value != data.XAxisName.value){
+           x.XAxisName.value = data.XAxisName.value
+         }
+       })
+      })
+      data.YAxisName.onChange({
+        println("Ychooser")
+        S.yAxis.label = data.YAxisName.value
+       val a =  S.objects.foreach(x => {
+         if(x.YAxisName.value != data.YAxisName.value){
+           x.YAxisName.value = data.YAxisName.value
+         }
+       })
+      })
 
       val seriesAdderMenu = new MenuItem("Add new series")
       seriesAdderMenu.onAction = (ae: ActionEvent) => {
@@ -538,12 +611,12 @@ object ChartValueChooser {
       })
 
 
-      val deletesYeetus = new MenuItem("Delete")
-      deletesYeetus.onAction = ((ae: ActionEvent) => {
+      val deletusYeetus = new MenuItem("Delete")
+      deletusYeetus.onAction = ((ae: ActionEvent) => {
         val a = flowPane.children.removeAll(S.titled)
       })
 
-      S.con.items.addAll(deletesYeetus, SeriesUpdateMenu, seriesAdderMenu)
+      S.con.items.addAll(deletusYeetus, SeriesUpdateMenu, seriesAdderMenu)
       flowPane.children.add(S.titled)
 
 
@@ -874,7 +947,7 @@ object ChartValueChooser {
       val menuitem = new MenuItem()
       menuitem.text <== data.nameProp
       menuitem.onAction = (ae: ActionEvent) => {
-         ChartValueUpdater.popUpSceneCardNums(originalScene, data)
+        ChartValueUpdater.popUpSceneCardNums(originalScene, data)
       }
       SeriesUpdateMenu.items.addAll(menuitem)
 

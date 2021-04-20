@@ -68,8 +68,8 @@ object ChartNewSeries {
     textYAxis.prefWidth <== listB.width
 
     textSeriesname.prefHeight = 35d
-    textXAxis.promptText = numberChart.chart.getYAxis.label.value
-    textYAxis.promptText = numberChart.chart.getXAxis.label.value
+    textXAxis.text = numberChart.chart.getYAxis.label.value
+    textYAxis.text = numberChart.chart.getXAxis.label.value
     textSeriesname.promptText = "Name of data"
     vbox1.children = List(listA, textXAxis, buttonA)
     vbox2.children = List(listB, textYAxis, buttonB)
@@ -114,12 +114,37 @@ object ChartNewSeries {
       numberChartObject.dataSeries.name = textSeriesname.text.value
       numberChartObject.Xpositions.setAll(XaxisVals: _*)
       numberChartObject.Ypositions.setAll(YaxisVals: _*)
+      numberChartObject.XAxisName.value = textXAxis.text.value
+      numberChartObject.YAxisName.value = textYAxis.text.value
+      numberChart.objects.foreach(x => {
+        if (x.XAxisName.value != numberChartObject.XAxisName.value) {
+          println("set series X")
+          x.XAxisName.value = numberChartObject.XAxisName.value
+        }
+      })
+       numberChart.objects.foreach(x => {
+         println("set series Y")
+        if (x.YAxisName.value != numberChartObject.YAxisName.value) {
+          x.YAxisName.value = numberChartObject.YAxisName.value
+        }
+      })
 
-      if (textXAxis.text.value != "")
-        numberChartObject.XAxisName.value = textXAxis.text.value
+      numberChartObject.XAxisName.onChange({
+        println("update series")
+         numberChart.objects.foreach(x => {
+          if (x.XAxisName.value != numberChartObject.XAxisName.value) {
+            x.XAxisName.value = numberChartObject.XAxisName.value
+          }
+        })
+      })
+      numberChartObject.YAxisName.onChange({
+         numberChart.objects.foreach(x => {
+          if (x.YAxisName.value != numberChartObject.YAxisName.value) {
+            x.YAxisName.value = numberChartObject.YAxisName.value
+          }
+        })
+      })
 
-      if (textYAxis.text.value != "")
-        numberChartObject.YAxisName.value = textYAxis.text.value
 
       numberChart.objects.add(numberChartObject)
 
@@ -179,7 +204,7 @@ object ChartNewSeries {
 
   }
 
-    def popUpSceneBar(originalScene: Scene, bar: Bar) = {
+  def popUpSceneBar(originalScene: Scene, bar: Bar) = {
     val stage = new Stage()
     stage.width = 400d
     stage.height = 500d
@@ -229,8 +254,8 @@ object ChartNewSeries {
     textYAxis.prefWidth <== listB.width
 
     textSeriesname.prefHeight = 35d
-    textXAxis.promptText = bar.chart.getYAxis.label.value
-    textYAxis.promptText = bar.chart.getXAxis.label.value
+    textXAxis.text = bar.chart.getYAxis.label.value
+    textYAxis.text = bar.chart.getXAxis.label.value
     textSeriesname.promptText = "Name of data"
     vbox1.children = List(listA, textXAxis, buttonA)
     vbox2.children = List(listB, textYAxis, buttonB)
@@ -276,11 +301,36 @@ object ChartNewSeries {
       stringNumberChartObject.Xpositions.setAll(XaxisVals: _*)
       stringNumberChartObject.Ypositions.setAll(YaxisVals: _*)
 
-      if (textXAxis.text.value != "")
-        stringNumberChartObject.XAxisName.value = textXAxis.text.value
+      stringNumberChartObject.XAxisName.value = textXAxis.text.value
+      stringNumberChartObject.YAxisName.value = textYAxis.text.value
+      bar.objects.foreach(x => {
+        if (x.XAxisName.value != stringNumberChartObject.XAxisName.value) {
+          println("set series X")
+          x.XAxisName.value = stringNumberChartObject.XAxisName.value
+        }
+      })
+       bar.objects.foreach(x => {
+         println("set series Y")
+        if (x.YAxisName.value != stringNumberChartObject.YAxisName.value) {
+          x.YAxisName.value = stringNumberChartObject.YAxisName.value
+        }
+      })
 
-      if (textYAxis.text.value != "")
-       stringNumberChartObject.YAxisName.value = textYAxis.text.value
+      stringNumberChartObject.XAxisName.onChange({
+        println("update series")
+         bar.objects.foreach(x => {
+          if (x.XAxisName.value != stringNumberChartObject.XAxisName.value) {
+            x.XAxisName.value = stringNumberChartObject.XAxisName.value
+          }
+        })
+      })
+      stringNumberChartObject.YAxisName.onChange({
+         bar.objects.foreach(x => {
+          if (x.YAxisName.value != stringNumberChartObject.YAxisName.value) {
+            x.YAxisName.value = stringNumberChartObject.YAxisName.value
+          }
+        })
+      })
 
       bar.objects.add(stringNumberChartObject)
 

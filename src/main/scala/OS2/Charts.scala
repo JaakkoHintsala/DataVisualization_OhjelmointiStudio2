@@ -18,6 +18,8 @@ trait NumberChart {
   val objects: ObservableBuffer[NumberChartObject]
   val chart: XYChart[Number, Number]
   val titled: TitledPane
+  val xAxis: NumberAxis
+  val yAxis: NumberAxis
 
 
 }
