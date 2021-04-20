@@ -238,3 +238,35 @@ class PieChartObject(x: Vector[javafx.scene.control.TablePosition[GenericRow, St
   extends StringNumberChartObject(x, y) {
 
 }
+
+class CardDataObject(x: Vector[javafx.scene.control.TablePosition[GenericRow, String]]) {
+  val positions = ObservableBuffer(x)
+  val stringProperties = ObservableBuffer(positions.map(x => {
+    val Prop = x.tableView.items.value(x.row).rowValue.value.apply(x.column).strValue
+    Prop
+  }).toVector)
+  positions.onChange({
+    val a = stringProperties.setAll(positions.map(x => {
+      val Prop = x.tableView.items.value(x.row).rowValue.value.apply(x.column).strValue
+      Prop
+    }).toVector: _*)
+  })
+  val numbers: ObservableBuffer[Number] = ObservableBuffer[Number]()
+
+  def update() = {
+    var nums = Vector[Number]()
+    stringProperties.foreach(x => {
+      if (x.value.toDoubleOption.nonEmpty) {
+        nums = nums :+ x.value.toDouble
+      }
+    })
+
+    numbers.setAll(nums: _*)
+  }
+
+  update()
+  stringProperties.onChange({
+    val a = update()
+  })
+
+}
