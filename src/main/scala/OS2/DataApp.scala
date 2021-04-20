@@ -36,7 +36,31 @@ object Appi extends JFXApp {
     val fileNewBar = new MenuItem("Barchart")
     val fileNewPie = new MenuItem("Piechart")
 
-    fileNew.items = List(fileNewTable, fileNewChatter, fileNewLine, fileNewBar, fileNewPie)
+    val fileCard = new Menu("Card")
+    val SCard = new MenuItem("Sum")
+    val minCard = new MenuItem("Min")
+    val maxCard = new MenuItem("Max")
+    val averageCard = new MenuItem("Average")
+    val stdDevCard = new MenuItem("Std deviation")
+    fileCard.items = List(SCard, minCard, maxCard, averageCard, stdDevCard)
+
+    SCard.onAction = (ae: ActionEvent) => {
+      ChartValueChooser.popUpSceneCard[SumCard](scenee, flowPane)
+    }
+    minCard.onAction = (ae: ActionEvent) => {
+      ChartValueChooser.popUpSceneCard[MinCard](scenee, flowPane)
+    }
+    maxCard.onAction = (ae: ActionEvent) => {
+      ChartValueChooser.popUpSceneCard[MaxCard](scenee, flowPane)
+    }
+    averageCard.onAction = (ae: ActionEvent) => {
+      ChartValueChooser.popUpSceneCard[AverageCard](scenee, flowPane)
+    }
+    stdDevCard.onAction = (ae: ActionEvent) => {
+      ChartValueChooser.popUpSceneCard[StandardDeviationCard](scenee, flowPane)
+    }
+
+    fileNew.items = List(fileNewTable, fileNewChatter, fileNewLine, fileNewBar, fileNewPie, fileCard)
 
     fileNewTable.onAction = (e: ActionEvent) => {
       val taulu = GenericTaulu(Vector(), Vector())
