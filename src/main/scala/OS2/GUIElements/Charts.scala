@@ -1,36 +1,40 @@
-package OS2
+package OS2.GUIElements
 
 import javafx.scene.control.Tooltip
-import javafx.scene.layout.StackPane
-import scalafx.beans.property.{ObjectProperty, StringProperty}
+import scalafx.Includes._
+import scalafx.beans.property.{DoubleProperty, ObjectProperty}
 import scalafx.collections.ObservableBuffer
-import scalafx.scene.chart.XYChart.Series
+import scalafx.event.ActionEvent
 import scalafx.scene.chart._
 import scalafx.scene.control._
-import scalafx.Includes._
-import scalafx.event.ActionEvent
-import scalafx.scene.control.cell._
-import scalafx.scene.control.cell.TextFieldTableCell.forTableColumn
-import scalafx.scene.input.MouseEvent
-import scalafx.util.StringConverter
 
-trait NumberChart {
+trait NumberChart extends Chart{
   val objects: ObservableBuffer[NumberChartObject]
   val chart: XYChart[Number, Number]
   val titled: TitledPane
   val xAxis: NumberAxis
   val yAxis: NumberAxis
 
+}
+trait Chart{
+  val w: DoubleProperty
+  val h: DoubleProperty
+  val xAxisName: ObjectProperty[String]
+  val yAxisName: ObjectProperty[String]
 
 }
 
 
-class Scatter(numberChartObjects: NumberChartObject*) extends NumberChart {
+class Scatter(numberChartObjects: NumberChartObject*) extends NumberChart with Chart {
   val objects = ObservableBuffer(numberChartObjects)
   val titled = new TitledPane()
   val xAxis = new NumberAxis()
   val yAxis = new NumberAxis()
   val chart: XYChart[Number, Number] = new ScatterChart(xAxis, yAxis)
+  val xAxisName: ObjectProperty[String] = xAxis.label
+  val yAxisName: ObjectProperty[String] = yAxis.label
+  val w = chart.prefWidth
+  val h = chart.prefHeight
   chart.animated = false
 
 
@@ -82,13 +86,17 @@ class Scatter(numberChartObjects: NumberChartObject*) extends NumberChart {
 
 }
 
-case class Line(numberChartObjects: NumberChartObject*) extends NumberChart {
+case class Line(numberChartObjects: NumberChartObject*) extends NumberChart with Chart  {
 
   val objects = ObservableBuffer(numberChartObjects)
   val titled = new TitledPane()
   val xAxis = new NumberAxis()
   val yAxis = new NumberAxis()
   val chart: XYChart[Number, Number] = new LineChart(xAxis, yAxis)
+  val xAxisName: ObjectProperty[String] = xAxis.label
+  val yAxisName: ObjectProperty[String] = yAxis.label
+  val w = chart.prefWidth
+  val h = chart.prefHeight
   chart.animated = false
 
 
@@ -139,12 +147,16 @@ case class Line(numberChartObjects: NumberChartObject*) extends NumberChart {
   })
 }
 
-case class Bar(stringNumberChartObjects: StringNumberChartObject*) {
+case class Bar(stringNumberChartObjects: StringNumberChartObject*) extends Chart {
   val objects = ObservableBuffer(stringNumberChartObjects)
   val titled = new TitledPane()
   val xAxis = new CategoryAxis()
   val yAxis = new NumberAxis()
   val chart: XYChart[String, Number] = new BarChart[String, Number](xAxis, yAxis)
+  val xAxisName: ObjectProperty[String] = xAxis.label
+  val yAxisName: ObjectProperty[String] = yAxis.label
+  val w = chart.prefWidth
+  val h = chart.prefHeight
   chart.animated = false
 
 
@@ -195,12 +207,11 @@ case class Bar(stringNumberChartObjects: StringNumberChartObject*) {
   })
 }
 
-case class Pie(pieChartObject: PieChartObject) {
+case class Pie(stringNumberChartObject: StringNumberChartObject)  {
 
   val titled = new TitledPane()
-  val xAxis = new CategoryAxis()
-  val yAxis = new NumberAxis()
   val chart = new PieChart()
+
   chart.animated = false
 
 
@@ -246,7 +257,7 @@ case class Pie(pieChartObject: PieChartObject) {
   def pieUpdate() = {
 
     var nums = Vector[(String, Number)]()
-    for (pair <- pieChartObject.XYProps) {
+    for (pair <- stringNumberChartObject.XYProps) {
       if (pair._1 != null && pair._2.value.trim.toDoubleOption.nonEmpty) {
         nums = nums :+ (pair._1.value, pair._2.value.toDouble)
       }
@@ -270,29 +281,29 @@ case class Pie(pieChartObject: PieChartObject) {
 
   pieUpdate()
 
-  pieChartObject.XStringProperties.foreach(x => {
+  stringNumberChartObject.XStringProperties.foreach(x => {
     x.onChange({
       pieUpdate()
     })
   })
 
-  pieChartObject.YStringProperties.foreach(x => {
+  stringNumberChartObject.YStringProperties.foreach(x => {
     x.onChange({
       pieUpdate()
     })
   })
 
-  pieChartObject.XStringProperties.onChange({
+  stringNumberChartObject.XStringProperties.onChange({
     pieUpdate()
-    pieChartObject.XStringProperties.foreach(x => {
+    stringNumberChartObject.XStringProperties.foreach(x => {
       x.onChange({
         pieUpdate()
       })
     })
   })
-  pieChartObject.YStringProperties.onChange({
+  stringNumberChartObject.YStringProperties.onChange({
     pieUpdate()
-    pieChartObject.YStringProperties.foreach(x => {
+    stringNumberChartObject.YStringProperties.foreach(x => {
       x.onChange({
         pieUpdate()
       })

@@ -1,27 +1,19 @@
-package OS2
+package OS2.GUIElements
 
-import scalafx.scene.control.SortEvent._
-import scalafx.scene.layout.StackPane
-import scalafx.scene.input.MouseEvent._
-import scalafx.scene.{AccessibleRole, Node}
+import scalafx.Includes._
 import scalafx.beans.property.{DoubleProperty, IntegerProperty, ObjectProperty, StringProperty}
 import scalafx.collections.ObservableBuffer
-import scalafx.scene.chart.XYChart.Series
-import scalafx.scene.chart._
-import scalafx.scene.control._
-import scalafx.Includes._
-import scalafx.application.Platform
 import scalafx.event.ActionEvent
 import scalafx.scene.control.ContentDisplay._
-import scalafx.scene.control.TreeTableColumn.CellEditEvent
+import scalafx.scene.control._
 import scalafx.scene.control.cell._
-import scalafx.scene.control.cell.TextFieldTableCell.forTableColumn
-import scalafx.scene.input.{InputMethodEvent, MouseEvent}
+import scalafx.scene.input.MouseEvent
+import scalafx.scene.layout.StackPane
 import scalafx.util.converter.DefaultStringConverter
 
-import java.beans.EventHandler
-import java.util.Comparator
-import scala.collection.mutable
+import java.util.UUID.randomUUID
+
+
 
 case class StrProp(string: String) {
   val strValue = StringProperty(string)
@@ -121,7 +113,7 @@ case class GenericTaulu(vector: Vector[GenericRow], initHeaders: Vector[String])
       col.cellValueFactory = _.value.valueAt(colIndex)
       col.prefWidth <== columWidth
 
-      col.id = headerStrs(colIndex)
+
       col.onEditCommit = e => {
         table.requestFocus()
         e.getRowValue.rowValue.value.apply(colIndex).strValue.value = e.getNewValue
@@ -138,9 +130,7 @@ case class GenericTaulu(vector: Vector[GenericRow], initHeaders: Vector[String])
 
 
       stack.children.add(label)
-      /*      if (stack.lookup("#stack > .label") != null) {
-              println(stack.lookup("#stack > .label").toString() + "löyty")
-            }*/
+
       table.setTableMenuButtonVisible(false)
 
 
@@ -313,6 +303,7 @@ case class GenericTaulu(vector: Vector[GenericRow], initHeaders: Vector[String])
   // table.contextMenu = cmenu
   // table.filterEvent()
   //  table.managed = false // things go wrong if this is set to false
+  table.id = randomUUID().toString
   refresh()
 
 

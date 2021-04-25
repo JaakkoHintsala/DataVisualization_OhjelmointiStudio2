@@ -1,13 +1,13 @@
-package OS2
+package OS2.GUIElements
 
+import scalafx.Includes._
 import scalafx.beans.property.{ObjectProperty, StringProperty}
 import scalafx.event._
-import scalafx.Includes._
 import scalafx.geometry.Pos
 import scalafx.scene.control.{ContextMenu, Label, MenuItem, TitledPane}
 import scalafx.scene.text.Font
 
-trait Card {
+class Card {
   val result: ObjectProperty[Number] = ObjectProperty(0: Number)
   val stringResult = StringProperty("")
   if (result != null && result.value != null) {
@@ -72,7 +72,7 @@ class SumCard(cardDataObject: CardDataObject) extends Card {
   })
 }
 
-class MaxCard(cardDataObject: CardDataObject) extends Card {
+class MaxCard(val cardDataObject: CardDataObject) extends Card {
   result.value = (value)
 
 
@@ -86,7 +86,7 @@ class MaxCard(cardDataObject: CardDataObject) extends Card {
   })
 }
 
-class MinCard(cardDataObject: CardDataObject) extends Card {
+class MinCard(val cardDataObject: CardDataObject) extends Card {
   result.value = (value)
 
   def value: Number = {
@@ -99,7 +99,7 @@ class MinCard(cardDataObject: CardDataObject) extends Card {
   })
 }
 
-class AverageCard(cardDataObject: CardDataObject) extends Card {
+class AverageCard(val cardDataObject: CardDataObject) extends Card {
   result.value = (value)
 
   def value: Number = {
@@ -112,7 +112,7 @@ class AverageCard(cardDataObject: CardDataObject) extends Card {
   })
 }
 
-class StandardDeviationCard(cardDataObject: CardDataObject) extends Card {
+class StandardDeviationCard(val cardDataObject: CardDataObject) extends Card {
   result.value = (value)
 
   def value: Number = {

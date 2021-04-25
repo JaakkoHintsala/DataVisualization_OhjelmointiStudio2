@@ -1,5 +1,8 @@
 package OS2
 
+import OS2.DataChoosers.ChartValueChooser
+import OS2.File.GenericTableFile
+import OS2.GUIElements.{AverageCard, GenericTaulu, MaxCard, MinCard, StandardDeviationCard, SumCard}
 import scalafx.Includes._
 import scalafx.application.JFXApp
 import scalafx.beans.property.DoubleProperty
@@ -11,6 +14,9 @@ import scalafx.scene.control._
 import scalafx.scene.input.{Dragboard, MouseDragEvent}
 import scalafx.scene.layout._
 import scalafx.stage._
+
+import java.nio.file.Paths
+import java.io.File
 
 object Appi extends JFXApp {
   stage = new JFXApp.PrimaryStage {
@@ -45,19 +51,19 @@ object Appi extends JFXApp {
     fileCard.items = List(SCard, minCard, maxCard, averageCard, stdDevCard)
 
     SCard.onAction = (ae: ActionEvent) => {
-      ChartValueChooser.popUpSceneCard[SumCard](scenee, flowPane)
+      ChartValueChooser.popUpSceneCard(classOf[SumCard],  scenee, flowPane)
     }
     minCard.onAction = (ae: ActionEvent) => {
-      ChartValueChooser.popUpSceneCard[MinCard](scenee, flowPane)
+      ChartValueChooser.popUpSceneCard(classOf[MinCard],scenee, flowPane)
     }
     maxCard.onAction = (ae: ActionEvent) => {
-      ChartValueChooser.popUpSceneCard[MaxCard](scenee, flowPane)
+      ChartValueChooser.popUpSceneCard(classOf[MaxCard],scenee, flowPane)
     }
     averageCard.onAction = (ae: ActionEvent) => {
-      ChartValueChooser.popUpSceneCard[AverageCard](scenee, flowPane)
+      ChartValueChooser.popUpSceneCard(classOf[AverageCard],scenee, flowPane)
     }
     stdDevCard.onAction = (ae: ActionEvent) => {
-      ChartValueChooser.popUpSceneCard[StandardDeviationCard](scenee, flowPane)
+      ChartValueChooser.popUpSceneCard(classOf[StandardDeviationCard],scenee, flowPane)
     }
 
     fileNew.items = List(fileNewTable, fileNewChatter, fileNewLine, fileNewBar, fileNewPie, fileCard)
@@ -65,13 +71,15 @@ object Appi extends JFXApp {
     fileNewTable.onAction = (e: ActionEvent) => {
       val taulu = GenericTaulu(Vector(), Vector())
       val newTable = taulu.table
+      val titled = new TitledPane()
+      titled.content = newTable
       val deletesYeetus = new MenuItem("Delete")
       deletesYeetus.onAction = ((ae: ActionEvent) => {
-        val a = flowPane.children.removeAll(newTable)
+        val a = flowPane.children.removeAll(titled)
       })
 
       taulu.cmenu.items.add(deletesYeetus)
-      flowPane.children.add(newTable)
+      flowPane.children.add(titled)
 
     }
     fileNewChatter.onAction = (e: ActionEvent) => {
@@ -93,7 +101,7 @@ object Appi extends JFXApp {
 
       val curr = new Tab()
       curr.text = "New tabb"
-      curr.content = GenericTableConverter.fromFile(selected.getAbsolutePath).table
+      curr.content = GenericTableFile.fromFile(selected.getAbsolutePath).table
 
 
       println(selected.toString)
@@ -104,8 +112,14 @@ object Appi extends JFXApp {
 
     fileSave.onAction = (e: ActionEvent) => {
       val ch = new FileChooser
-      val selected = ch.showOpenDialog(stage)
-      // GenericTableConverter.toFile(selected.getAbsolutePath, t)
+      val currentPath = Paths.get(".").toAbsolutePath.normalize().toString
+      ch.setInitialDirectory(new File(currentPath))
+      val f = new File(currentPath)
+      val filter = new FileChooser.ExtensionFilter("Dashboard", "*.dashb")
+      ch.extensionFilters.addAll(filter)
+
+      val selected = ch.showSaveDialog(stage)
+       GenericTableFile.toFile(selected.getAbsolutePath, flowPane.children(0).asInstanceOf[javafx.scene.control.TitledPane].content.value.getUserData.asInstanceOf[GenericTaulu])
       println(selected.toString)
     }
     val button = new MenuItem("print selected")

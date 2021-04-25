@@ -1,20 +1,24 @@
-package OS2
+package OS2.GUIElements
 
 import javafx.scene.control.Tooltip
 import javafx.scene.layout.StackPane
+import scalafx.Includes._
 import scalafx.beans.property.{ObjectProperty, StringProperty}
 import scalafx.collections.ObservableBuffer
-import scalafx.scene.chart.XYChart.Series
 import scalafx.scene.chart._
-import scalafx.scene.control._
-import scalafx.Includes._
-import scalafx.event.ActionEvent
-import scalafx.scene.control.cell._
-import scalafx.scene.control.cell.TextFieldTableCell.forTableColumn
 import scalafx.scene.input.MouseEvent
-import scalafx.util.StringConverter
 
-class NumberChartObject(xCol: Vector[javafx.scene.control.TablePosition[GenericRow, String]], yCol: Vector[javafx.scene.control.TablePosition[GenericRow, String]]) {
+trait DataObject {
+
+  val Xpositions :ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]
+  val Ypositions : ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]
+  val dataName: StringProperty
+  val XStringProperties: ObservableBuffer[StringProperty]
+  val YStringProperties: ObservableBuffer[StringProperty]
+
+}
+
+class NumberChartObject(xCol: Vector[javafx.scene.control.TablePosition[GenericRow, String]], yCol: Vector[javafx.scene.control.TablePosition[GenericRow, String]]) extends DataObject {
 
   var XAxisName = ObjectProperty("")
   var YAxisName = ObjectProperty("")
@@ -34,7 +38,9 @@ class NumberChartObject(xCol: Vector[javafx.scene.control.TablePosition[GenericR
 
   Xpositions.onChange({
     val newStuff = Xpositions.toVector.map((x: javafx.scene.control.TablePosition[GenericRow, String]) => {
+
       val Prop = (x: javafx.scene.control.TablePosition[GenericRow, String]).tableView.items.value(x.row).rowValue.value.apply(x.column).strValue
+
       Prop
     })
     val a = XStringProperties.setAll(newStuff: _*)
@@ -125,7 +131,7 @@ class NumberChartObject(xCol: Vector[javafx.scene.control.TablePosition[GenericR
 
 }
 
-class StringNumberChartObject(xCol: Vector[javafx.scene.control.TablePosition[GenericRow, String]], yCol: Vector[javafx.scene.control.TablePosition[GenericRow, String]]) {
+class StringNumberChartObject(xCol: Vector[javafx.scene.control.TablePosition[GenericRow, String]], yCol: Vector[javafx.scene.control.TablePosition[GenericRow, String]]) extends DataObject{
 
   var XAxisName = ObjectProperty("")
   var YAxisName = ObjectProperty("")
@@ -234,13 +240,9 @@ class StringNumberChartObject(xCol: Vector[javafx.scene.control.TablePosition[Ge
   })
 }
 
-class PieChartObject(x: Vector[javafx.scene.control.TablePosition[GenericRow, String]], y: Vector[javafx.scene.control.TablePosition[GenericRow, String]])
-  extends StringNumberChartObject(x, y) {
 
-}
-
-class CardDataObject(x: Vector[javafx.scene.control.TablePosition[GenericRow, String]]) {
-  val nameProp = StringProperty("")
+class CardDataObject(x: Vector[javafx.scene.control.TablePosition[GenericRow, String]])  {
+  val dataName = StringProperty("")
   val positions = ObservableBuffer(x)
   val stringProperties = ObservableBuffer(positions.map(x => {
     val Prop = x.tableView.items.value(x.row).rowValue.value.apply(x.column).strValue

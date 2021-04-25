@@ -1,27 +1,16 @@
-package OS2
+package OS2.DataChoosers
 
+import OS2.GUIElements.{Bar, Card, CardDataObject, GenericRow, Line, NumberChartObject, Pie, Scatter, StringNumberChartObject}
 
-import javafx.collections.ListChangeListener
-import scalafx.collections._
-import scalafx.beans.property.ObjectProperty
 import scalafx.Includes._
-import scalafx.application.JFXApp
-import scalafx.beans.property.DoubleProperty
+import scalafx.beans.property.ObjectProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.event.ActionEvent
-import scalafx.geometry.Orientation
-import scalafx.scene.{AccessibleRole, _}
+import scalafx.geometry.{Insets, Orientation}
+import scalafx.scene.Scene
 import scalafx.scene.control._
-import scalafx.scene.input.{Dragboard, MouseDragEvent}
-import scalafx.scene.layout._
-import scalafx.scene.control.TableView
+import scalafx.scene.layout.{FlowPane, HBox, VBox}
 import scalafx.stage.Stage
-import scalafx.geometry.Insets
-
-
-import javax.swing.event.{ChangeEvent, ChangeListener}
-import scala.reflect.runtime.universe._
-
 
 object ChartValueChooser {
 
@@ -128,25 +117,24 @@ object ChartValueChooser {
       data.YAxisName.value = textYAxis.text.value
 
 
-
       data.XAxisName.onChange({
         println("Xchooser")
         S.xAxis.label = data.XAxisName.value
 
-       val a =  S.objects.foreach(x => {
-         if(x.XAxisName.value != data.XAxisName.value){
-           x.XAxisName.value = data.XAxisName.value
-         }
-       })
+        val a = S.objects.foreach(x => {
+          if (x.XAxisName.value != data.XAxisName.value) {
+            x.XAxisName.value = data.XAxisName.value
+          }
+        })
       })
       data.YAxisName.onChange({
         println("Ychooser")
         S.yAxis.label = data.YAxisName.value
-       val a =  S.objects.foreach(x => {
-         if(x.YAxisName.value != data.YAxisName.value){
-           x.YAxisName.value = data.YAxisName.value
-         }
-       })
+        val a = S.objects.foreach(x => {
+          if (x.YAxisName.value != data.YAxisName.value) {
+            x.YAxisName.value = data.YAxisName.value
+          }
+        })
       })
 
       val seriesAdderMenu = new MenuItem("Add new series")
@@ -345,25 +333,24 @@ object ChartValueChooser {
       data.YAxisName.value = textYAxis.text.value
 
 
-
       data.XAxisName.onChange({
         println("Xchooser")
         S.xAxis.label = data.XAxisName.value
 
-       val a =  S.objects.foreach(x => {
-         if(x.XAxisName.value != data.XAxisName.value){
-           x.XAxisName.value = data.XAxisName.value
-         }
-       })
+        val a = S.objects.foreach(x => {
+          if (x.XAxisName.value != data.XAxisName.value) {
+            x.XAxisName.value = data.XAxisName.value
+          }
+        })
       })
       data.YAxisName.onChange({
         println("Ychooser")
         S.yAxis.label = data.YAxisName.value
-       val a =  S.objects.foreach(x => {
-         if(x.YAxisName.value != data.YAxisName.value){
-           x.YAxisName.value = data.YAxisName.value
-         }
-       })
+        val a = S.objects.foreach(x => {
+          if (x.YAxisName.value != data.YAxisName.value) {
+            x.YAxisName.value = data.YAxisName.value
+          }
+        })
       })
 
       val seriesAdderMenu = new MenuItem("Add new series")
@@ -456,7 +443,6 @@ object ChartValueChooser {
 
     stage.scene = newScene
     stage.show()
-
 
 
   }
@@ -563,25 +549,24 @@ object ChartValueChooser {
       data.YAxisName.value = textYAxis.text.value
 
 
-
       data.XAxisName.onChange({
         println("Xchooser")
         S.xAxis.label = data.XAxisName.value
 
-       val a =  S.objects.foreach(x => {
-         if(x.XAxisName.value != data.XAxisName.value){
-           x.XAxisName.value = data.XAxisName.value
-         }
-       })
+        val a = S.objects.foreach(x => {
+          if (x.XAxisName.value != data.XAxisName.value) {
+            x.XAxisName.value = data.XAxisName.value
+          }
+        })
       })
       data.YAxisName.onChange({
         println("Ychooser")
         S.yAxis.label = data.YAxisName.value
-       val a =  S.objects.foreach(x => {
-         if(x.YAxisName.value != data.YAxisName.value){
-           x.YAxisName.value = data.YAxisName.value
-         }
-       })
+        val a = S.objects.foreach(x => {
+          if (x.YAxisName.value != data.YAxisName.value) {
+            x.YAxisName.value = data.YAxisName.value
+          }
+        })
       })
 
       val seriesAdderMenu = new MenuItem("Add new series")
@@ -622,6 +607,7 @@ object ChartValueChooser {
 
       stage.hide()
     }
+    val a = new Card
 
 
     if (originalScene.getFocusOwner != null && originalScene.getFocusOwner.getClass.getSimpleName == "TableView") {
@@ -770,14 +756,10 @@ object ChartValueChooser {
       scenePane.requestFocus()
     }
     endButton.onAction = (e: ActionEvent) => {
-      val data = new PieChartObject(XaxisVals.toVector, YaxisVals.toVector)
+      val data = new StringNumberChartObject(XaxisVals.toVector, YaxisVals.toVector)
       data.dataSeries.name = textSeriesname.text.value
       val S = new Pie(data)
       S.titled.text = textSeriesname.text.value
-      S.xAxis.label = textXAxis.text.value
-      S.yAxis.label = textYAxis.text.value
-
-
       val SeriesUpdateMenu = new Menu("Update data")
 
       val menuitem = new MenuItem()
@@ -855,7 +837,7 @@ object ChartValueChooser {
 
   }
 
-  def popUpSceneCard[T <: Card : TypeTag](originalScene: Scene, flowPane: FlowPane): Unit = {
+  def popUpSceneCard[T <: Card](cardClass: Class[T], originalScene: Scene, flowPane: FlowPane): Unit = {
 
     val stage = new Stage()
     stage.width = 250d
@@ -918,26 +900,10 @@ object ChartValueChooser {
     endButton.onAction = (e: ActionEvent) => {
       XaxisVals = positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]].toVector
       val data = new CardDataObject(XaxisVals.toVector)
-      data.nameProp.value = textSeriesname.text.value
+      data.dataName.value = textSeriesname.text.value
 
 
-      val S: Card = typeOf[T] match {
-        case a if a =:= typeOf[SumCard] => {
-          new SumCard(data)
-        }
-        case a if a =:= typeOf[MaxCard] => {
-          new MaxCard(data)
-        }
-        case a if a =:= typeOf[MinCard] => {
-          new MinCard(data)
-        }
-        case a if a =:= typeOf[AverageCard] => {
-          new AverageCard(data)
-        }
-        case a if a =:= typeOf[StandardDeviationCard] => {
-          new StandardDeviationCard(data)
-        }
-      }
+      val S: Card = cardClass.getConstructor(classOf[CardDataObject]).newInstance(data)
 
       S.titled.text = textSeriesname.text.value
 
@@ -945,7 +911,7 @@ object ChartValueChooser {
       val SeriesUpdateMenu = new Menu("Update data")
 
       val menuitem = new MenuItem()
-      menuitem.text <== data.nameProp
+      menuitem.text <== data.dataName
       menuitem.onAction = (ae: ActionEvent) => {
         ChartValueUpdater.popUpSceneCardNums(originalScene, data)
       }

@@ -1,24 +1,19 @@
-package OS2
+package OS2.DataChoosers
 
-import javafx.collections.ListChangeListener
-import scalafx.collections._
+import OS2.GUIElements.CardDataObject
+import OS2.GUIElements.{CardDataObject, GenericRow, NumberChartObject, StringNumberChartObject}
 import scalafx.beans.property.ObjectProperty
-import scalafx.Includes._
-import scalafx.application.JFXApp
-import scalafx.beans.property.DoubleProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.event.ActionEvent
-import scalafx.geometry.Orientation
-import scalafx.scene.{AccessibleRole, _}
+import scalafx.geometry.{Insets, Orientation}
+import scalafx.scene.Scene
 import scalafx.scene.control._
-import scalafx.scene.input.{Dragboard, MouseDragEvent}
-import scalafx.scene.layout._
-import scalafx.scene.control.TableView
+import scalafx.scene.layout.{HBox, VBox}
 import scalafx.stage.Stage
-import scalafx.geometry.Insets
+import scalafx.Includes._
 
-object ChartNewSeries {
-  def popUpScene(originalScene: Scene, numberChart: NumberChart) = {
+object ChartValueUpdater {
+  def popUpSceneNumber(originalScene: Scene, numberChartObject: NumberChartObject) = {
     val stage = new Stage()
     stage.width = 400d
     stage.height = 500d
@@ -68,9 +63,9 @@ object ChartNewSeries {
     textYAxis.prefWidth <== listB.width
 
     textSeriesname.prefHeight = 35d
-    textXAxis.text = numberChart.chart.getYAxis.label.value
-    textYAxis.text = numberChart.chart.getXAxis.label.value
-    textSeriesname.promptText = "Name of data"
+    textXAxis.text = numberChartObject.XAxisName.value
+    textYAxis.text = numberChartObject.YAxisName.value
+    textSeriesname.text = numberChartObject.dataSeries.name.value
     vbox1.children = List(listA, textXAxis, buttonA)
     vbox2.children = List(listB, textYAxis, buttonB)
     val sep = Separator(Orientation.Horizontal)
@@ -110,43 +105,14 @@ object ChartNewSeries {
       scenePane.requestFocus()
     }
     endButton.onAction = (e: ActionEvent) => {
-      val numberChartObject = new NumberChartObject(XaxisVals.toVector, YaxisVals.toVector)
+      val data = new NumberChartObject(XaxisVals.toVector, YaxisVals.toVector)
       numberChartObject.dataSeries.name = textSeriesname.text.value
       numberChartObject.Xpositions.setAll(XaxisVals: _*)
       numberChartObject.Ypositions.setAll(YaxisVals: _*)
+
+
       numberChartObject.XAxisName.value = textXAxis.text.value
       numberChartObject.YAxisName.value = textYAxis.text.value
-      numberChart.objects.foreach(x => {
-        if (x.XAxisName.value != numberChartObject.XAxisName.value) {
-          println("set series X")
-          x.XAxisName.value = numberChartObject.XAxisName.value
-        }
-      })
-       numberChart.objects.foreach(x => {
-         println("set series Y")
-        if (x.YAxisName.value != numberChartObject.YAxisName.value) {
-          x.YAxisName.value = numberChartObject.YAxisName.value
-        }
-      })
-
-      numberChartObject.XAxisName.onChange({
-        println("update series")
-         numberChart.objects.foreach(x => {
-          if (x.XAxisName.value != numberChartObject.XAxisName.value) {
-            x.XAxisName.value = numberChartObject.XAxisName.value
-          }
-        })
-      })
-      numberChartObject.YAxisName.onChange({
-         numberChart.objects.foreach(x => {
-          if (x.YAxisName.value != numberChartObject.YAxisName.value) {
-            x.YAxisName.value = numberChartObject.YAxisName.value
-          }
-        })
-      })
-
-
-      numberChart.objects.add(numberChartObject)
 
       stage.hide()
     }
@@ -176,10 +142,12 @@ object ChartNewSeries {
 
 
             val cc = ObservableBuffer(t.getSelectionModel.getSelectedCells.toVector)
+
             val diff = cc -- positions
             val bb = positions.retainAll(cc.toVector)
             val d = positions.addAll(diff)
 
+            println(t.getSelectionModel)
 
             t.getSelectionModel.getSelectedCells.onChange({
 
@@ -204,7 +172,7 @@ object ChartNewSeries {
 
   }
 
-  def popUpSceneBar(originalScene: Scene, bar: Bar) = {
+  def popUpSceneStringNumber(originalScene: Scene, stringNumberChartObject: StringNumberChartObject) = {
     val stage = new Stage()
     stage.width = 400d
     stage.height = 500d
@@ -254,9 +222,9 @@ object ChartNewSeries {
     textYAxis.prefWidth <== listB.width
 
     textSeriesname.prefHeight = 35d
-    textXAxis.text = bar.chart.getYAxis.label.value
-    textYAxis.text = bar.chart.getXAxis.label.value
-    textSeriesname.promptText = "Name of data"
+    textXAxis.text = stringNumberChartObject.XAxisName.value
+    textYAxis.text = stringNumberChartObject.YAxisName.value
+    textSeriesname.text = stringNumberChartObject.dataSeries.name.value
     vbox1.children = List(listA, textXAxis, buttonA)
     vbox2.children = List(listB, textYAxis, buttonB)
     val sep = Separator(Orientation.Horizontal)
@@ -296,43 +264,14 @@ object ChartNewSeries {
       scenePane.requestFocus()
     }
     endButton.onAction = (e: ActionEvent) => {
-      val stringNumberChartObject = new StringNumberChartObject(XaxisVals.toVector, YaxisVals.toVector)
+      val data = new NumberChartObject(XaxisVals.toVector, YaxisVals.toVector)
       stringNumberChartObject.dataSeries.name = textSeriesname.text.value
       stringNumberChartObject.Xpositions.setAll(XaxisVals: _*)
       stringNumberChartObject.Ypositions.setAll(YaxisVals: _*)
 
+
       stringNumberChartObject.XAxisName.value = textXAxis.text.value
       stringNumberChartObject.YAxisName.value = textYAxis.text.value
-      bar.objects.foreach(x => {
-        if (x.XAxisName.value != stringNumberChartObject.XAxisName.value) {
-          println("set series X")
-          x.XAxisName.value = stringNumberChartObject.XAxisName.value
-        }
-      })
-       bar.objects.foreach(x => {
-         println("set series Y")
-        if (x.YAxisName.value != stringNumberChartObject.YAxisName.value) {
-          x.YAxisName.value = stringNumberChartObject.YAxisName.value
-        }
-      })
-
-      stringNumberChartObject.XAxisName.onChange({
-        println("update series")
-         bar.objects.foreach(x => {
-          if (x.XAxisName.value != stringNumberChartObject.XAxisName.value) {
-            x.XAxisName.value = stringNumberChartObject.XAxisName.value
-          }
-        })
-      })
-      stringNumberChartObject.YAxisName.onChange({
-         bar.objects.foreach(x => {
-          if (x.YAxisName.value != stringNumberChartObject.YAxisName.value) {
-            x.YAxisName.value = stringNumberChartObject.YAxisName.value
-          }
-        })
-      })
-
-      bar.objects.add(stringNumberChartObject)
 
       stage.hide()
     }
@@ -362,10 +301,12 @@ object ChartNewSeries {
 
 
             val cc = ObservableBuffer(t.getSelectionModel.getSelectedCells.toVector)
+
             val diff = cc -- positions
             val bb = positions.retainAll(cc.toVector)
             val d = positions.addAll(diff)
 
+            println(t.getSelectionModel)
 
             t.getSelectionModel.getSelectedCells.onChange({
 
@@ -387,7 +328,125 @@ object ChartNewSeries {
     stage.scene = newScene
     stage.show()
 
-
   }
 
+  def popUpSceneCardNums(originalScene: Scene, cardDataObject: CardDataObject): Unit = {
+
+    val stage = new Stage()
+    stage.width = 250d
+    stage.height = 600d
+    stage.alwaysOnTop = true
+    val scenePane = new ScrollPane()
+    val newScene = new Scene(scenePane)
+    scenePane.fitToWidth = true
+    val hboxParent = new HBox()
+    val endButton = new Button("Make card")
+    val realParent = new VBox()
+
+    realParent.spacing = 10d
+    endButton.prefWidth <== scenePane.width / 3
+    endButton.prefHeight = 40d
+    realParent.alignment = scalafx.geometry.Pos.TopCenter
+    realParent.children = List(hboxParent, endButton)
+    scenePane.content = realParent
+    val vbox1 = new VBox()
+
+    hboxParent.children.addAll(vbox1)
+    hboxParent.spacing = 20d
+    vbox1.spacing = 10d
+
+    vbox1.fillWidth = true
+    vbox1.alignment = scalafx.geometry.Pos.TopCenter
+
+
+    val placeHolder1 = new Label("Nothing selected")
+    val listA = new ListView[String]()
+    listA.margin = Insets(20d)
+    var XaxisVals = Vector[javafx.scene.control.TablePosition[GenericRow, String]]()
+    listA.placeholder = placeHolder1
+    listA.prefWidth <== scenePane.width
+
+    listA.prefHeight <== scenePane.height - 150d
+
+
+    val textSeriesname = new TextField()
+    textSeriesname.prefHeight = 20d
+    textSeriesname.margin = Insets(0d, 20d, 0, 20d)
+
+
+    textSeriesname.text = cardDataObject.dataName.value
+    vbox1.children = List(listA)
+
+    val sep = Separator(Orientation.Horizontal)
+    realParent.children = List(hboxParent, sep, textSeriesname, endButton)
+
+
+    var selections = new ObjectProperty(this, "bruh", null: javafx.scene.control.TableView.TableViewSelectionModel[GenericRow])
+    var positions = ObservableBuffer[javafx.scene.control.TablePosition[_, _]]()
+    positions.onChange({
+
+      listA.items = positions.map(x => x.getTableColumn.getCellData(x.getRow).asInstanceOf[String])
+
+    })
+
+
+    endButton.onAction = (e: ActionEvent) => {
+      XaxisVals = positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]].toVector
+      cardDataObject.positions.setAll(XaxisVals: _*)
+      cardDataObject.dataName.value = textSeriesname.text.value
+      stage.hide()
+    }
+
+
+    if (originalScene.getFocusOwner != null && originalScene.getFocusOwner.getClass.getSimpleName == "TableView") {
+      positions.setAll(originalScene.getFocusOwner.asInstanceOf[javafx.scene.control.TableView[GenericRow]].getSelectionModel.getSelectedCells.toVector: _*)
+      selections = originalScene.getFocusOwner.asInstanceOf[javafx.scene.control.TableView[GenericRow]].selectionModel
+
+      selections.value.getSelectedCells.onChange({
+
+        val c = ObservableBuffer(selections.value.getSelectedCells.toVector)
+        val diff = c -- positions
+        val b = positions.retainAll(c.toVector)
+        val d = positions.addAll(diff)
+
+      })
+    }
+
+    originalScene.focusOwnerProperty().onChange((obs, oldV, newV) => {
+      if (newV != null) {
+        newV.getClass.getSimpleName match {
+          case "TableView" => {
+
+            val t = newV.asInstanceOf[javafx.scene.control.TableView[GenericRow]]
+            selections = t.selectionModel
+
+
+            val cc = ObservableBuffer(t.getSelectionModel.getSelectedCells.toVector)
+
+            val diff = cc -- positions
+            val bb = positions.retainAll(cc.toVector)
+            val d = positions.addAll(diff)
+
+            println(t.getSelectionModel)
+
+            t.getSelectionModel.getSelectedCells.onChange({
+
+              val ccc = ObservableBuffer(t.getSelectionModel.getSelectedCells.toVector)
+              val difff = ccc -- positions
+              val bbb = positions.retainAll(ccc.toVector)
+              val dd = positions.addAll(difff)
+
+            })
+
+
+          }
+          case _ => {}
+        }
+      }
+    })
+
+
+    stage.scene = newScene
+    stage.show()
+  }
 }
