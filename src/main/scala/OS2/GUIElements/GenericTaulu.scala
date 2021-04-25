@@ -14,7 +14,6 @@ import scalafx.util.converter.DefaultStringConverter
 import java.util.UUID.randomUUID
 
 
-
 case class StrProp(string: String) {
   val strValue = StringProperty(string)
 
@@ -298,12 +297,15 @@ case class GenericTaulu(vector: Vector[GenericRow], initHeaders: Vector[String])
     table.maxHeight = table.height.value * 0.7
     table.minHeight = table.height.value * 0.7
   }
+
   cmenu.items ++= List(rowmenu, row5menu, colmenu, col5menu, item1, item2)
   table.contextMenu = cmenu
   // table.contextMenu = cmenu
   // table.filterEvent()
   //  table.managed = false // things go wrong if this is set to false
   table.id = randomUUID().toString
+  val titled = new TitledPane()
+  titled.content = table
   refresh()
 
 
