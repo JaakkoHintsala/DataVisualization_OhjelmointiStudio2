@@ -2,7 +2,7 @@ package OS2
 
 import OS2.DataChoosers.ChartValueChooser
 import OS2.File.{GenericTableFile, UniversalFileOpener}
-import OS2.GUIElements.{AverageCard, GenericTaulu, MaxCard, MinCard, StandardDeviationCard, SumCard}
+import OS2.GUIElements.{AverageCard, GenericRow, GenericTaulu, MaxCard, MinCard, StandardDeviationCard, SumCard}
 import scalafx.Includes._
 import scalafx.application.JFXApp
 import scalafx.beans.property.DoubleProperty
@@ -28,7 +28,7 @@ object Appi extends JFXApp {
   val flowPane = new FlowPane(Orientation.Horizontal, 10d, 10d)
   val roott = new BorderPane()
   val scenee = new Scene(roott)
-
+  var tables = Vector[TableView[GenericRow]]()
 
   roott.top = new MenuBar {
     val fileMenu = new Menu("File")
@@ -70,6 +70,8 @@ object Appi extends JFXApp {
 
     fileNewTable.onAction = (e: ActionEvent) => {
       val taulu = GenericTaulu(Vector(), Vector())
+
+      tables = tables :+ taulu.table
       val savemenu = new MenuItem("Save Table")
       savemenu.onAction = (ae: ActionEvent) => {
         OS2.File.GenericTableFile.toFile(stage, taulu)
@@ -102,7 +104,7 @@ object Appi extends JFXApp {
     val fileOpen = new MenuItem("Open")
 
     fileOpen.onAction = (e: ActionEvent) => {
-      UniversalFileOpener.openSesame(stage, flowPane)
+      UniversalFileOpener.openSesame(stage, flowPane, tables)
     }
 
 

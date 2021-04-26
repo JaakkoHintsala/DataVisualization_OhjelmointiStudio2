@@ -17,21 +17,22 @@ trait DataObject {
   val YStringProperties: ObservableBuffer[StringProperty]
 
 }
+case class TablePosVector(col: Vector[javafx.scene.control.TablePosition[GenericRow, String]])
 
-class NumberChartObject(xCol: Vector[javafx.scene.control.TablePosition[GenericRow, String]], yCol: Vector[javafx.scene.control.TablePosition[GenericRow, String]]) extends DataObject {
+class NumberChartObject(xCol: TablePosVector, yCol: TablePosVector) extends DataObject {
 
   var XAxisName = ObjectProperty("")
   var YAxisName = ObjectProperty("")
-  val Xpositions = ObservableBuffer(xCol)
-  val Ypositions = ObservableBuffer(yCol)
+  val Xpositions = ObservableBuffer(xCol.col)
+  val Ypositions = ObservableBuffer(yCol.col)
 
-  val XStringProperties = ObservableBuffer(xCol.map((x: javafx.scene.control.TablePosition[GenericRow, String]) => {
+  val XStringProperties = ObservableBuffer(xCol.col.map((x: javafx.scene.control.TablePosition[GenericRow, String]) => {
     val Prop = (x: javafx.scene.control.TablePosition[GenericRow, String]).tableView.items.value(x.row).rowValue.value.apply(x.column).strValue
     Prop
   }))
 
 
-  val YStringProperties = ObservableBuffer(yCol.map(x => {
+  val YStringProperties = ObservableBuffer(yCol.col.map(x => {
     val Prop = x.tableView.items.value(x.row).rowValue.value.apply(x.column).strValue
     Prop
   }))
@@ -131,20 +132,20 @@ class NumberChartObject(xCol: Vector[javafx.scene.control.TablePosition[GenericR
 
 }
 
-class StringNumberChartObject(xCol: Vector[javafx.scene.control.TablePosition[GenericRow, String]], yCol: Vector[javafx.scene.control.TablePosition[GenericRow, String]]) extends DataObject{
+class StringNumberChartObject(xCol: TablePosVector, yCol: TablePosVector) extends DataObject{
 
   var XAxisName = ObjectProperty("")
   var YAxisName = ObjectProperty("")
-  val Xpositions = ObservableBuffer(xCol)
-  val Ypositions = ObservableBuffer(yCol)
+  val Xpositions = ObservableBuffer(xCol.col)
+  val Ypositions = ObservableBuffer(yCol.col)
 
-  val XStringProperties = ObservableBuffer(xCol.map((x: javafx.scene.control.TablePosition[GenericRow, String]) => {
+  val XStringProperties = ObservableBuffer(xCol.col.map((x: javafx.scene.control.TablePosition[GenericRow, String]) => {
     val Prop = (x: javafx.scene.control.TablePosition[GenericRow, String]).tableView.items.value(x.row).rowValue.value.apply(x.column).strValue
     Prop
   }))
 
 
-  val YStringProperties = ObservableBuffer(yCol.map(x => {
+  val YStringProperties = ObservableBuffer(yCol.col.map(x => {
     val Prop = x.tableView.items.value(x.row).rowValue.value.apply(x.column).strValue
     Prop
   }))

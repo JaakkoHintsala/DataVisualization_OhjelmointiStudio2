@@ -1,6 +1,6 @@
 package OS2.DataChoosers
 
-import OS2.GUIElements.{Bar, GenericRow, NumberChart, NumberChartObject, StringNumberChartObject}
+import OS2.GUIElements.{Bar, GenericRow, NumberChart, NumberChartObject, StringNumberChartObject, TablePosVector}
 import OS2._
 import scalafx.beans.property.ObjectProperty
 import scalafx.collections.ObservableBuffer
@@ -105,7 +105,7 @@ object ChartNewSeries {
       scenePane.requestFocus()
     }
     endButton.onAction = (e: ActionEvent) => {
-      val numberChartObject = new NumberChartObject(XaxisVals.toVector, YaxisVals.toVector)
+      val numberChartObject = new NumberChartObject(TablePosVector(XaxisVals.toVector), TablePosVector(YaxisVals.toVector))
       numberChartObject.dataSeries.name = textSeriesname.text.value
       numberChartObject.Xpositions.setAll(XaxisVals: _*)
       numberChartObject.Ypositions.setAll(YaxisVals: _*)
@@ -288,7 +288,7 @@ object ChartNewSeries {
       scenePane.requestFocus()
     }
     endButton.onAction = (e: ActionEvent) => {
-      val stringNumberChartObject = new StringNumberChartObject(XaxisVals.toVector, YaxisVals.toVector)
+      val stringNumberChartObject = new StringNumberChartObject(TablePosVector(XaxisVals.toVector), TablePosVector(YaxisVals.toVector))
       stringNumberChartObject.dataSeries.name = textSeriesname.text.value
       stringNumberChartObject.Xpositions.setAll(XaxisVals: _*)
       stringNumberChartObject.Ypositions.setAll(YaxisVals: _*)

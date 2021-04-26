@@ -1,7 +1,8 @@
 package OS2.File
 
-import OS2.GUIElements.{Bar, Card, Chart, DataObject, GenericRow, GenericTaulu, NumberChart, Pie, StringNumberChartObject}
+import OS2.GUIElements.{Bar, Card, Chart, DataObject, GenericRow, GenericTaulu, Line, NumberChart, NumberChartObject, Pie, Scatter, StringNumberChartObject, TablePosVector}
 import OS2.{GUIElements, _}
+
 import scalafx.beans.property.StringProperty
 import scalafx.scene.control.{TableColumn, TablePosition, TableView}
 import scalafx.Includes._
@@ -27,10 +28,6 @@ case class PieChartSerializable(seriesSerializable: SeriesSerializable[StringNum
 case class CardSerializable[T <: Card](pos: Vector[TablePosSerializable], nimi: String)
 
 
-
-
-
-
 object ToSerializableConverters {
 
   def TablePosConverter(pos: TablePosition[GenericRow, String]): TablePosSerializable = {
@@ -38,11 +35,11 @@ object ToSerializableConverters {
     ser
   }
 
-  def SeriesConverter[T <: DataObject]( dataObject: T): SeriesSerializable[T] = {
+  def SeriesConverter[T <: DataObject](dataObject: T): SeriesSerializable[T] = {
     val ret = SeriesSerializable(
       dataObject.getClass.asInstanceOf[Class[T]],
       dataObject.Xpositions.toVector.map(x => TablePosConverter(new TablePosition(x))),
-      dataObject.Ypositions.toVector.map(x => TablePosConverter(new TablePosition(x))),
+      dataObject.Ypositions.toVector.map(y => TablePosConverter(new TablePosition(y))),
       dataObject.dataName.value
     )
     ret
@@ -53,7 +50,15 @@ object ToSerializableConverters {
       case x: NumberChart => {
         ChartSerializable(
           chart.getClass.asInstanceOf[Class[T]],
-          x.objects.map(y => SeriesConverter[DataObject]( y)).toVector,
+          x.objects.map(y => {
+            println("x: " + y.Xpositions)
+            println("y: " + y.Ypositions)
+            println(y.dataSeries)
+            val a = SeriesConverter[DataObject](y)
+            println("x: " + a.xVals)
+            println("y: " + a.yVals)
+            a
+          }).toVector,
           x.xAxis.label.value,
           x.yAxis.label.value,
           x.chart.width.value,
@@ -71,7 +76,7 @@ object ToSerializableConverters {
         )
       }
     }
-ret
+    ret
   }
 
   def pieChartConverter(pie: Pie): PieChartSerializable = {
@@ -84,6 +89,11 @@ ret
     }
     ret
   }
+
+  def CardConverter(card: Card) = {
+
+  }
+
 }
 
 
@@ -94,15 +104,15 @@ object FromSerializableConverters {
       None
     }
     else {
-      val ret = new TablePosition[GenericRow, String](table.get, pos.rowIndex, table.get.columns.apply(pos.colIndex).asInstanceOf[TableColumn[GenericRow, String]])
+      val ret = new TablePosition[GenericRow, String](table.get, pos.rowIndex, table.get.columns.apply(pos.colIndex).asInstanceOf[javafx.scene.control.TableColumn[GenericRow, String]])
       Option(ret)
     }
   }
 
-  def SeriesConverter[T <: DataObject]( serSer: SeriesSerializable[T], taulut: Vector[TableView[GenericRow]]): T = {
-    val Xs: Vector[TablePosition[GenericRow,String]] = serSer.xVals.flatMap(x => TablePosConverter(x, taulut))
-    val Ys: Vector[TablePosition[GenericRow,String]]  = serSer.yVals.flatMap(x => TablePosConverter(x, taulut))
-    val ret = serSer.DOClass.getConstructor(classOf[ Vector[TablePosition[GenericRow,String]] ], classOf[ Vector[TablePosition[GenericRow,String]] ]).newInstance(Xs, Ys)
+  def SeriesConverter[T <: DataObject](serSer: SeriesSerializable[T], taulut: Vector[TableView[GenericRow]]): T = {
+    val Xs = serSer.xVals.flatMap(x => TablePosConverter(x, taulut)).map(_.delegate)
+    val Ys = serSer.yVals.flatMap(x => TablePosConverter(x, taulut)).map(_.delegate)
+    val ret = serSer.DOClass.getConstructor(TablePosVector(Vector()).getClass, TablePosVector(Vector()).getClass).newInstance(TablePosVector(Xs), TablePosVector(Ys))
     if (ret.Xpositions.isEmpty) {
       val a = ret.XStringProperties.setAll(serSer.xVals.map(_.strValue).map(x => StringProperty(x)): _*)
     }
@@ -115,14 +125,20 @@ object FromSerializableConverters {
 
   }
 
-  def ChartConverter[T <: Chart: scala.reflect.runtime.universe.TypeTag](chartSer: ChartSerializable[T], taulut: Vector[TableView[GenericRow]]): T = {
+  def ChartConverter[T <: Chart](chartSer: ChartSerializable[T], taulut: Vector[TableView[GenericRow]]): T = {
     val serieses = chartSer.Serieses.map(x => SeriesConverter(x, taulut))
-    val ret = chartSer.chartClass.getConstructor(classOf[DataObject]).newInstance(serieses)
+    val ret: Chart = chartSer.chartClass match {
+      case a if a.getName.endsWith("Bar") => new Bar(serieses.map(_.asInstanceOf[StringNumberChartObject]): _*)
+      case b if b.getName.endsWith("Scatter") => new Scatter(serieses.map(_.asInstanceOf[NumberChartObject]): _*)
+      case c if c.getName.endsWith("Line") => new Line(serieses.map(_.asInstanceOf[NumberChartObject]): _*)
+    }
+
+    //chartSer.chartClass.getConstructor(classOf[DataObject].asSubclass(classOf[DataObject])).newInstance(serieses)
     ret.w.value = chartSer.width
     ret.h.value = chartSer.height
     ret.xAxisName.value = chartSer.XaxisName
     ret.yAxisName.value = chartSer.YaxisName
-    ret
+    ret.asInstanceOf[T]
   }
 
   def PieChartConverter(pieChartSer: PieChartSerializable, taulut: Vector[TableView[GenericRow]]): Pie = {

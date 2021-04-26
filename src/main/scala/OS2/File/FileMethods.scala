@@ -27,7 +27,7 @@ class CardFilter extends FileChooser.ExtensionFilter("Card", "*.card")
 class TableFilter extends FileChooser.ExtensionFilter("Table", "*.table")
 
 object UniversalFileOpener {
-  def openSesame(stage: Stage, flowPane: FlowPane) = {
+  def openSesame(stage: Stage, flowPane: FlowPane, tbls: Vector[TableView[GenericRow]]) = {
 
 
     val chooser = new FileChooser()
@@ -37,10 +37,16 @@ object UniversalFileOpener {
     val selected = chooser.showOpenDialog(stage)
     if (selected != null) {
       if (selected.getAbsolutePath.endsWith(".table")) {
-        flowPane.children.add(GenericTableFile.fromFile(selected.getAbsolutePath).titled)
+        val tabl = GenericTableFile.fromFile(selected.getAbsolutePath)
+        flowPane.children.add(tabl.titled)
+      }
+      if (selected.getAbsolutePath.endsWith(".lineC") ||
+        selected.getAbsolutePath.endsWith(".scatterC") ||
+        selected.getAbsolutePath.endsWith(".barC")) {
+        val ch = ChartFile.fromFile(selected.getAbsolutePath, tbls)
+        flowPane.children.add(ch.titled)
       }
     }
-
   }
 
 }
@@ -54,6 +60,8 @@ object ChartFile {
     }
     val chooser = new FileChooser()
     chooser.extensionFilters.add(curFilter)
+    val currentPath = Paths.get(".").toAbsolutePath.normalize().toString
+    chooser.setInitialDirectory(new File(currentPath))
     val selected = chooser.showSaveDialog(stage)
     if (selected != null) {
       val serializible = ToSerializableConverters.chartConverter(chart)
@@ -61,6 +69,25 @@ object ChartFile {
       oos.writeObject(serializible)
       oos.close()
     }
+  }
+
+  def fromFile(polku: String, taulut: Vector[TableView[GenericRow]]): Chart = {
+    val ois = new ObjectInputStream(new FileInputStream(polku))
+    val chartti = {
+      if (polku.endsWith(".lineC")) {
+        ois.readObject.asInstanceOf[ChartSerializable[Line]]
+      }
+      else if (polku.endsWith(".scatterC")) {
+        ois.readObject.asInstanceOf[ChartSerializable[Scatter]]
+      }
+      else {
+        ois.readObject.asInstanceOf[ChartSerializable[Bar]]
+      }
+    }
+    ois.close()
+
+    val chart = FromSerializableConverters.ChartConverter(chartti, taulut)
+    chart
   }
 
 }
