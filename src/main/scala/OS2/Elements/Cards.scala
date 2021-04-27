@@ -1,7 +1,7 @@
 package OS2.Elements
 
 import OS2.DataChoosers.ChartValueUpdater
-import OS2.File.CardFile
+import OS2.File.{CardFile, Saveable}
 import scalafx.Includes._
 import scalafx.beans.property.{ObjectProperty, StringProperty}
 import scalafx.event._
@@ -11,7 +11,7 @@ import scalafx.scene.control.{ContextMenu, Label, Menu, MenuItem, TitledPane}
 import scalafx.scene.layout.FlowPane
 import scalafx.scene.text.Font
 
-trait Card {
+trait Card extends Saveable{
   val cardDataObject: CardDataObject
   val result: ObjectProperty[Number] = ObjectProperty(0: Number)
   val stringResult = StringProperty("")

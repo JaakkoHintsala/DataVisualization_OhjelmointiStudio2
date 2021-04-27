@@ -1,7 +1,7 @@
 package OS2.Elements
 
 import OS2.DataChoosers.{ChartNewSeries, ChartValueUpdater}
-import OS2.File.{ChartFile, PieChartFile}
+import OS2.File.{ChartFile, PieChartFile, Saveable}
 import javafx.scene.control.Tooltip
 import org.graalvm.compiler.phases.common.NodeCounterPhase.Stage
 import scalafx.Includes._
@@ -88,7 +88,7 @@ trait NumberChart extends Chart {
 
 }
 
-trait Chart {
+trait Chart extends Saveable {
   val chart: scalafx.scene.chart.Chart
   val w: DoubleProperty
   val h: DoubleProperty
@@ -286,7 +286,7 @@ case class Bar(stringNumberChartObjects: StringNumberChartObject*) extends Chart
   }
 }
 
-case class Pie(stringNumberChartObject: StringNumberChartObject) {
+case class Pie(stringNumberChartObject: StringNumberChartObject) extends Saveable {
 
   val titled = new TitledPane()
   titled.userData = this

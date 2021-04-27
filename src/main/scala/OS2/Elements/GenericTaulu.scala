@@ -1,5 +1,6 @@
 package OS2.Elements
 
+import OS2.File.Saveable
 import scalafx.Includes._
 import scalafx.beans.property.{DoubleProperty, IntegerProperty, ObjectProperty, StringProperty}
 import scalafx.collections.ObservableBuffer
@@ -37,7 +38,7 @@ case class GenericRow(vector: Vector[String]) {
 
 }
 
-case class GenericTaulu(vector: Vector[GenericRow], initHeaders: Vector[String]) {
+case class GenericTaulu(vector: Vector[GenericRow], initHeaders: Vector[String]) extends Saveable{
 
   val rowHeight = DoubleProperty(30d)
   val columWidth = DoubleProperty(85d)

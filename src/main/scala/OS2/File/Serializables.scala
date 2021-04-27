@@ -2,12 +2,15 @@ package OS2.File
 
 import OS2.Elements.{Bar, Card, Chart, DataObject, GenericRow, GenericTaulu, Line, NumberChart, NumberChartObject, Pie, Scatter, StringNumberChartObject, TablePosVector}
 import OS2.Elements._
-
 import scalafx.beans.property.StringProperty
-import scalafx.scene.control.{TableColumn, TablePosition, TableView}
+import scalafx.scene.control.{TableColumn, TablePosition, TableView, TitledPane}
 import scalafx.Includes._
 
 import java.io._
+
+trait Saveable {
+  val titled: TitledPane
+}
 
 case class GenericTauluSerializable(
                                      vector: Vector[Vector[String]],
@@ -27,8 +30,29 @@ case class PieChartSerializable(seriesSerializable: SeriesSerializable[StringNum
 
 case class CardSerializable(tyyppi: String, pos: Vector[TablePosSerializable], nimi: String, width: Double, height: Double)
 
+case class DashBoardSerializable(sers: Vector[Serializable])
+
 
 object ToSerializableConverters {
+
+  def DashboardConverter(vector: Vector[Saveable]) = {
+    val ret = vector.map {
+      case card: Card => {
+        CardConverter(card)
+      }
+      case chart: Chart => {
+        chartConverter(chart)
+      }
+      case pie: Pie => {
+        pieChartConverter(pie)
+      }
+      case table: GenericTaulu => {
+        val serializible = GenericTauluSerializable(table.data.toVector.map(_.rowValue.value.map(_.strValue.value)), table.headerStrs.toVector, table.table.id.name, table.table.width.value, table.table.height.value)
+        serializible
+      }
+    }
+    DashBoardSerializable(ret.map(_.asInstanceOf[Product with Serializable]))
+  }
 
   def TablePosConverter(pos: TablePosition[GenericRow, String]): TablePosSerializable = {
     val ser = TablePosSerializable(pos.column, pos.row, pos.tableView.id.value, pos.tableView.items.getValue.get(pos.row).rowValue.value(pos.column).strValue.value)
@@ -121,6 +145,44 @@ object ToSerializableConverters {
 
 
 object FromSerializableConverters {
+
+  def DashboardConverter(dashBoardSerializable: DashBoardSerializable) = {
+    var t = Vector[GenericTaulu]()
+    var ret = Vector[Saveable]()
+
+    for (ser <- dashBoardSerializable.sers) {
+      ser match {
+        case taulu: GenericTaulu =>
+          t = t :+ taulu
+        case _ =>
+      }
+    }
+    val tables = t.map(_.table)
+
+
+    for (ser <- dashBoardSerializable.sers) {
+      case card: CardSerializable => {
+        ret = ret :+ CardConverter(card, tables)
+      }
+      case chart: ChartSerializable[_] => {
+        ret = ret :+ ChartConverter(chart, tables)
+      }
+      case pie: PieChartSerializable => {
+        ret = ret :+ PieChartConverter(pie, tables)
+      }
+      case table: GenericTauluSerializable => {
+        val a = GenericTaulu(table.vector.map(GenericRow(_)), table.initHeaders)
+        a.table.prefHeight = table.height
+        a.table.prefWidth = table.width
+        a.table.id = table.id
+
+        ret = ret :+ a
+      }
+
+    }
+
+  }
+
   def TablePosConverter(pos: TablePosSerializable, taulut: Vector[TableView[GenericRow]]): Option[TablePosition[GenericRow, String]] = {
     val table = taulut.find(x => x.id.value == pos.tableID)
     if (table.isEmpty) {
