@@ -1,31 +1,24 @@
-package OS2
+package OS2.Elements
 
+import OS2.Appi.stage
 import OS2.DataChoosers.ChartValueChooser
-import OS2.File.{DashBoardFile, GenericTableFile, Saveable, UniversalFileOpener}
-import OS2.Elements.{AverageCard, GUI, GenericRow, GenericTaulu, MaxCard, MinCard, StandardDeviationCard, SumCard}
-import scalafx.Includes._
+import OS2.File.UniversalFileOpener
 import scalafx.application.JFXApp
-import scalafx.beans.property.DoubleProperty
-import scalafx.collections.ObservableBuffer
 import scalafx.event.ActionEvent
 import scalafx.geometry.Orientation
-import scalafx.scene._
-import scalafx.scene.control._
-import scalafx.scene.input.{Dragboard, MouseDragEvent}
-import scalafx.scene.layout._
-import scalafx.stage._
+import scalafx.scene.Scene
+import scalafx.scene.control.{Menu, MenuBar, MenuItem, ScrollPane, TableView}
+import scalafx.scene.layout.{BorderPane, FlowPane, HBox, VBox}
+import scalafx.Includes._
+import OS2.File._
+import scalafx.stage.Stage
 
-import java.nio.file.Paths
-import java.io.File
+class GUI {
 
-object Appi extends JFXApp {
-    stage = new JFXApp.PrimaryStage {
-
-    title.value = "DATA"
-    width = 1000
-    height = 700
-  }
-
+  val stage = new Stage
+    stage.title.value = "DATA"
+    stage.width = 1000
+    stage.height = 700
   val flowPane = new FlowPane(Orientation.Horizontal, 10d, 10d)
   val roott = new BorderPane()
   val scenee = new Scene(roott)

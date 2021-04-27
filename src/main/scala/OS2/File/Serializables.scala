@@ -35,7 +35,7 @@ case class DashBoardSerializable(sers: Vector[Serializable])
 
 object ToSerializableConverters {
 
-  def DashboardConverter(vector: Vector[Saveable]) = {
+  def DashboardConverter(vector: Vector[Saveable]): DashBoardSerializable = {
     val ret = vector.map {
       case card: Card => {
         CardConverter(card)
@@ -146,7 +146,7 @@ object ToSerializableConverters {
 
 object FromSerializableConverters {
 
-  def DashboardConverter(dashBoardSerializable: DashBoardSerializable) = {
+  def DashboardConverter(dashBoardSerializable: DashBoardSerializable): (Vector[Saveable], Vector[GenericTaulu]) = {
     var t = Vector[GenericTaulu]()
     var ret = Vector[Saveable]()
 
@@ -161,6 +161,7 @@ object FromSerializableConverters {
 
 
     for (ser <- dashBoardSerializable.sers) {
+          ser match {
       case card: CardSerializable => {
         ret = ret :+ CardConverter(card, tables)
       }
@@ -178,9 +179,10 @@ object FromSerializableConverters {
 
         ret = ret :+ a
       }
+      case _ =>
 
-    }
-
+    }}
+    (ret, t)
   }
 
   def TablePosConverter(pos: TablePosSerializable, taulut: Vector[TableView[GenericRow]]): Option[TablePosition[GenericRow, String]] = {

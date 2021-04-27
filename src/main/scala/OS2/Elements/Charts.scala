@@ -88,7 +88,7 @@ trait NumberChart extends Chart {
 
 }
 
-trait Chart extends Saveable {
+ trait Chart extends Saveable with Product with Serializable{
   val chart: scalafx.scene.chart.Chart
   val w: DoubleProperty
   val h: DoubleProperty

@@ -6,6 +6,7 @@ import scalafx.scene.control.{MenuItem, TableView}
 import scalafx.stage._
 import scalafx.scene._
 import scalafx.Includes._
+import scalafx.application.JFXApp
 import scalafx.event.ActionEvent
 import scalafx.scene.layout.FlowPane
 
@@ -71,10 +72,13 @@ object UniversalFileOpener {
         pie.contextMenu(flowPane, stage, scene)
         flowPane.children.add(pie.titled)
       }
-      if(selected.getAbsolutePath.endsWith(".card")) {
+      if (selected.getAbsolutePath.endsWith(".card")) {
         val c = CardFile.fromFile(selected.getAbsolutePath, tbls)
         c.contextMenu(flowPane, stage, scene)
         flowPane.children.add(c.titled)
+      }
+      if (selected.getAbsolutePath.endsWith(".dashb")) {
+        DashBoardFile.fromFile(selected.getAbsolutePath)
       }
     }
   }
@@ -199,5 +203,36 @@ object CardFile {
       oos.writeObject(serializible)
       oos.close()
     }
+  }
+}
+
+object DashBoardFile {
+  def toFile(stage: Stage, vector: Vector[Saveable]) {
+    val chooser = new FileChooser()
+    chooser.extensionFilters.add(new DashbFilter)
+    val currentPath = Paths.get(".").toAbsolutePath.normalize().toString
+    chooser.setInitialDirectory(new File(currentPath))
+    val selected = chooser.showSaveDialog(stage)
+    if (selected != null) {
+
+      val ser = ToSerializableConverters.DashboardConverter(vector)
+      val oos = new ObjectOutputStream(new FileOutputStream(selected.getAbsolutePath))
+      oos.writeObject(ser)
+      oos.close()
+    }
+  }
+
+  def fromFile(polku: String) = {
+    val ois = new ObjectInputStream(new FileInputStream(polku))
+    val ret = ois.readObject.asInstanceOf[DashBoardSerializable]
+    ois.close()
+    val tupla = FromSerializableConverters.DashboardConverter(ret)
+    val gui = new GUI {
+
+      tables = tupla._2.map(_.table)
+      flowPane.children = (tupla._1.map(_.titled).toList)
+    }
+    println("bruh")
+    gui.stage.show()
   }
 }
