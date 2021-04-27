@@ -1,4 +1,4 @@
-package OS2.GUIElements
+package OS2.Elements
 
 import scalafx.Includes._
 import scalafx.beans.property.{DoubleProperty, IntegerProperty, ObjectProperty, StringProperty}
@@ -305,6 +305,7 @@ case class GenericTaulu(vector: Vector[GenericRow], initHeaders: Vector[String])
   //  table.managed = false // things go wrong if this is set to false
   table.id = randomUUID().toString
   val titled = new TitledPane()
+  titled.userData = this
   titled.content = table
   refresh()
 

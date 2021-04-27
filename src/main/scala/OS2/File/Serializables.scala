@@ -1,7 +1,7 @@
 package OS2.File
 
-import OS2.GUIElements.{Bar, Card, Chart, DataObject, GenericRow, GenericTaulu, Line, NumberChart, NumberChartObject, Pie, Scatter, StringNumberChartObject, TablePosVector}
-import OS2.{GUIElements, _}
+import OS2.Elements.{Bar, Card, Chart, DataObject, GenericRow, GenericTaulu, Line, NumberChart, NumberChartObject, Pie, Scatter, StringNumberChartObject, TablePosVector}
+import OS2.Elements._
 
 import scalafx.beans.property.StringProperty
 import scalafx.scene.control.{TableColumn, TablePosition, TableView}
@@ -25,7 +25,7 @@ case class ChartSerializable[T <: Chart](chartClass: Class[T], Serieses: Vector[
 
 case class PieChartSerializable(seriesSerializable: SeriesSerializable[StringNumberChartObject], width: Double, height: Double)
 
-case class CardSerializable[T <: Card](pos: Vector[TablePosSerializable], nimi: String)
+case class CardSerializable(tyyppi: String, pos: Vector[TablePosSerializable], nimi: String, width: Double, height: Double)
 
 
 object ToSerializableConverters {
@@ -90,10 +90,33 @@ object ToSerializableConverters {
     ret
   }
 
-  def CardConverter(card: Card) = {
+  def CardConverter(card: Card): CardSerializable = {
 
+
+    val tyypp = {
+      if (card.getClass.toString.endsWith("SumCard")) {
+        "SumCard"
+      }
+      else if (card.getClass.toString.endsWith("MinCard")) {
+        "MinCard"
+      }
+      else if (card.getClass.toString.endsWith("MaxCard")) {
+        "MaxCard"
+      }
+      else if (card.getClass.toString.endsWith("AverageCard")) {
+        "AverageCard"
+      }
+      else {
+        "StandardDeviationCard"
+      }
+    }
+
+    val positions = card.cardDataObject.positions.map(x => {
+      TablePosConverter(x)
+    }).toVector
+
+    CardSerializable(tyypp, positions, card.titled.text.value, card.titled.width.value, card.titled.height.value)
   }
-
 }
 
 
@@ -104,8 +127,12 @@ object FromSerializableConverters {
       None
     }
     else {
-      val ret = new TablePosition[GenericRow, String](table.get, pos.rowIndex, table.get.columns.apply(pos.colIndex).asInstanceOf[javafx.scene.control.TableColumn[GenericRow, String]])
-      Option(ret)
+      try {
+        val ret = new TablePosition[GenericRow, String](table.get, pos.rowIndex, table.get.columns.apply(pos.colIndex).asInstanceOf[javafx.scene.control.TableColumn[GenericRow, String]])
+        Option(ret)
+      } catch {
+        case e: Exception => None
+      }
     }
   }
 
@@ -142,9 +169,35 @@ object FromSerializableConverters {
   }
 
   def PieChartConverter(pieChartSer: PieChartSerializable, taulut: Vector[TableView[GenericRow]]): Pie = {
-    val ret = GUIElements.Pie(SeriesConverter(pieChartSer.seriesSerializable, taulut))
+    val ret = Pie(SeriesConverter(pieChartSer.seriesSerializable, taulut))
     ret.chart.prefWidth = pieChartSer.width
     ret.chart.prefHeight = pieChartSer.height
     ret
+  }
+
+  def CardConverter(cardSerializable: CardSerializable, taulut: Vector[TableView[GenericRow]]): Card = {
+    val data = new CardDataObject(cardSerializable.pos.flatMap(x => TablePosConverter(x, taulut)).map(_.delegate))
+    val c: Card = cardSerializable.tyyppi match {
+      case "SumCard" => {
+        new SumCard(data)
+      }
+      case "MinCard" => {
+        new MinCard(data)
+      }
+      case "MaxCard" => {
+        new MaxCard(data)
+      }
+      case "AverageCard" => {
+        new AverageCard(data)
+      }
+      case "StandardDeviationCard" => {
+        new StandardDeviationCard(data)
+      }
+    }
+
+    c.titled.text = cardSerializable.nimi
+    c.titled.prefWidth = cardSerializable.width
+    c.titled.prefHeight = cardSerializable.height
+    c
   }
 }

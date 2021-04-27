@@ -1,6 +1,6 @@
 package OS2.DataChoosers
 
-import OS2.GUIElements.GenericRow
+import OS2.Elements.GenericRow
 import scalafx.geometry.Orientation
 import scalafx.scene.Scene
 import scalafx.scene.control.{Button, Label, ListView, ScrollPane, Separator, TextField}

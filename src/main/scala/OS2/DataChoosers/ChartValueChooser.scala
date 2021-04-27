@@ -1,7 +1,7 @@
 package OS2.DataChoosers
 
 import OS2.File.ChartFile
-import OS2.GUIElements.{Bar, Card, CardDataObject, GenericRow, Line, NumberChartObject, Pie, Scatter, StringNumberChartObject, TablePosVector}
+import OS2.Elements.{Bar, Card, CardDataObject, GenericRow, Line, NumberChartObject, Pie, Scatter, StringNumberChartObject, TablePosVector}
 import scalafx.Includes._
 import scalafx.beans.property.ObjectProperty
 import scalafx.collections.ObservableBuffer
@@ -62,8 +62,8 @@ object ChartValueChooser {
       data.YAxisName.value = ch.textXAxis.text.value
       data.YAxisName.value = ch.textYAxis.text.value
 
-      S.contextMenu(flowPane, new Stage(originalScene.getWindow.asInstanceOf[javafx.stage.Stage]))
-      S.numContextMenu(flowPane, new Stage(originalScene.getWindow.asInstanceOf[javafx.stage.Stage]), originalScene)
+      S.contextMenu(flowPane, new Stage(originalScene.getWindow.asInstanceOf[javafx.stage.Stage]), originalScene)
+
       flowPane.children.add(S.titled)
 
 
@@ -172,8 +172,7 @@ object ChartValueChooser {
       data.YAxisName.value = ch.textYAxis.text.value
 
 
-      S.contextMenu(flowPane, new Stage(originalScene.getWindow.asInstanceOf[javafx.stage.Stage]))
-      S.numContextMenu(flowPane, new Stage(originalScene.getWindow.asInstanceOf[javafx.stage.Stage]), originalScene)
+    S.contextMenu(flowPane, new Stage(originalScene.getWindow.asInstanceOf[javafx.stage.Stage]), originalScene)
 
 
       flowPane.children.add(S.titled)
@@ -283,15 +282,14 @@ object ChartValueChooser {
       data.YAxisName.value = ch.textXAxis.text.value
       data.YAxisName.value = ch.textYAxis.text.value
 
-      S.contextMenu(flowPane, new Stage(originalScene.getWindow.asInstanceOf[javafx.stage.Stage]))
-      S.stringNumContextMenu(flowPane, new Stage(originalScene.getWindow.asInstanceOf[javafx.stage.Stage]), originalScene)
+     S.contextMenu(flowPane, new Stage(originalScene.getWindow.asInstanceOf[javafx.stage.Stage]), originalScene)
 
       flowPane.children.add(S.titled)
 
 
       ch.stage.hide()
     }
-    val a = new Card
+
 
 
     if (originalScene.getFocusOwner != null && originalScene.getFocusOwner.getClass.getSimpleName == "TableView") {
@@ -389,22 +387,7 @@ object ChartValueChooser {
       data.dataSeries.name = ch.textSeriesname.text.value
       val S = new Pie(data)
       S.titled.text = ch.textSeriesname.text.value
-      val SeriesUpdateMenu = new Menu("Update data")
-
-      val menuitem = new MenuItem()
-      menuitem.text <== data.dataSeries.name
-      menuitem.onAction = (ae: ActionEvent) => {
-        ChartValueUpdater.popUpSceneStringNumber(originalScene, data)
-      }
-      SeriesUpdateMenu.items.addAll(menuitem)
-
-
-      val deletesYeetus = new MenuItem("Delete")
-      deletesYeetus.onAction = ((ae: ActionEvent) => {
-        val a = flowPane.children.removeAll(S.titled)
-      })
-
-      S.con.items.addAll(deletesYeetus, SeriesUpdateMenu)
+      S.contextMenu(flowPane, new Stage(originalScene.getWindow.asInstanceOf[javafx.stage.Stage]), originalScene)
       flowPane.children.add(S.titled)
 
 
@@ -537,22 +520,7 @@ object ChartValueChooser {
       S.titled.text = textSeriesname.text.value
 
 
-      val SeriesUpdateMenu = new Menu("Update data")
-
-      val menuitem = new MenuItem()
-      menuitem.text <== data.dataName
-      menuitem.onAction = (ae: ActionEvent) => {
-        ChartValueUpdater.popUpSceneCardNums(originalScene, data)
-      }
-      SeriesUpdateMenu.items.addAll(menuitem)
-
-
-      val deletesYeetus = new MenuItem("Delete")
-      deletesYeetus.onAction = ((ae: ActionEvent) => {
-        val a = flowPane.children.removeAll(S.titled)
-      })
-
-      S.con.items.addAll(deletesYeetus, SeriesUpdateMenu)
+      S.contextMenu(flowPane, new Stage(originalScene.getWindow.asInstanceOf[javafx.stage.Stage]), originalScene)
 
       flowPane.children.add(S.titled)
 

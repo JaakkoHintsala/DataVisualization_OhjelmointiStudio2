@@ -1,6 +1,6 @@
 package OS2.DataChoosers
 
-import OS2.GUIElements.{Bar, GenericRow, NumberChart, NumberChartObject, StringNumberChartObject, TablePosVector}
+import OS2.Elements.{Bar, GenericRow, NumberChart, NumberChartObject, StringNumberChartObject, TablePosVector}
 import OS2._
 import scalafx.beans.property.ObjectProperty
 import scalafx.collections.ObservableBuffer
@@ -63,8 +63,8 @@ object ChartNewSeries {
     textYAxis.prefWidth <== listB.width
 
     textSeriesname.prefHeight = 35d
-    textXAxis.text = numberChart.chart.getYAxis.label.value
-    textYAxis.text = numberChart.chart.getXAxis.label.value
+    textXAxis.text = numberChart.chart.getXAxis.label.value
+    textYAxis.text = numberChart.chart.getYAxis.label.value
     textSeriesname.promptText = "Name of data"
     vbox1.children = List(listA, textXAxis, buttonA)
     vbox2.children = List(listB, textYAxis, buttonB)

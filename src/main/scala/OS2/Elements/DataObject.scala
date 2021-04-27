@@ -1,4 +1,4 @@
-package OS2.GUIElements
+package OS2.Elements
 
 import javafx.scene.control.Tooltip
 import javafx.scene.layout.StackPane

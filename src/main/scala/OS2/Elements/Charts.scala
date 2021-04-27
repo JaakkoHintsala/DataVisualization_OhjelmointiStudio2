@@ -1,7 +1,7 @@
-package OS2.GUIElements
+package OS2.Elements
 
 import OS2.DataChoosers.{ChartNewSeries, ChartValueUpdater}
-import OS2.File.ChartFile
+import OS2.File.{ChartFile, PieChartFile}
 import javafx.scene.control.Tooltip
 import org.graalvm.compiler.phases.common.NodeCounterPhase.Stage
 import scalafx.Includes._
@@ -21,13 +21,23 @@ trait NumberChart extends Chart {
   val xAxis: NumberAxis
   val yAxis: NumberAxis
 
-  def numContextMenu(flowPane: FlowPane, stage: scalafx.stage.Stage, scene: Scene) = {
-     val seriesAdderMenu = new MenuItem("Add new series")
-      seriesAdderMenu.onAction = (ae: ActionEvent) => {
-        ChartNewSeries.popUpScene(scene, this)
-      }
+  def contextMenu(flowPane: FlowPane, stage: scalafx.stage.Stage, scene: Scene) = {
+    val seriesAdderMenu = new MenuItem("Add new series")
+    seriesAdderMenu.onAction = (ae: ActionEvent) => {
+      ChartNewSeries.popUpScene(scene, this)
+    }
 
-      val SeriesUpdateMenu = new Menu("Update data")
+    val SeriesUpdateMenu = new Menu("Update data")
+    for (obj <- objects) {
+      val menuitem = new MenuItem()
+      menuitem.text <== obj.dataSeries.name
+      menuitem.onAction = (ae: ActionEvent) => {
+        ChartValueUpdater.popUpSceneNumber(scene, obj)
+      }
+      SeriesUpdateMenu.items.addAll(menuitem)
+    }
+    objects.onChange({
+      SeriesUpdateMenu.items.clear()
       for (obj <- objects) {
         val menuitem = new MenuItem()
         menuitem.text <== obj.dataSeries.name
@@ -36,21 +46,10 @@ trait NumberChart extends Chart {
         }
         SeriesUpdateMenu.items.addAll(menuitem)
       }
-      objects.onChange({
-        SeriesUpdateMenu.items.clear()
-        for (obj <- objects) {
-          val menuitem = new MenuItem()
-          menuitem.text <== obj.dataSeries.name
-          menuitem.onAction = (ae: ActionEvent) => {
-            ChartValueUpdater.popUpSceneNumber(scene, obj)
-          }
-          SeriesUpdateMenu.items.addAll(menuitem)
-        }
-      })
+    })
 
-    for(data <- objects)
-   {
-          data.XAxisName.onChange({
+    for (data <- objects) {
+      data.XAxisName.onChange({
         println("Xchooser")
         chart.getXAxis.label = data.XAxisName.value
 
@@ -71,8 +70,20 @@ trait NumberChart extends Chart {
         })
       })
 
-   }
+    }
     con.items.addAll(SeriesUpdateMenu, seriesAdderMenu)
+    val deletesYeetus = new MenuItem("Delete")
+    deletesYeetus.onAction = ((ae: ActionEvent) => {
+      val a = flowPane.children.removeAll(titled)
+    })
+
+
+    val save = new MenuItem("Save")
+    save.onAction = (ae: ActionEvent) => {
+      ChartFile.toFile(this, stage)
+    }
+
+    val a = con.items.addAll(deletesYeetus, save)
   }
 
 }
@@ -83,7 +94,8 @@ trait Chart {
   val h: DoubleProperty
   val xAxisName: ObjectProperty[String]
   val yAxisName: ObjectProperty[String]
-  lazy val titled = new TitledPane()
+  val titled = new TitledPane()
+  titled.userData = this
   lazy val con = new ContextMenu()
   val item1 = new MenuItem()
   item1.text = "zoom +"
@@ -114,23 +126,7 @@ trait Chart {
     }
   })
 
- def contextMenu(flowPane: FlowPane, stage: scalafx.stage.Stage) = {
-
-
-
-      val deletesYeetus = new MenuItem("Delete")
-      deletesYeetus.onAction = ((ae: ActionEvent) => {
-        val a = flowPane.children.removeAll(titled)
-      })
-
-
-      val save = new MenuItem("Save")
-      save.onAction = (ae: ActionEvent) => {
-        ChartFile.toFile(this, stage)
-      }
-
-      con.items.addAll(deletesYeetus, save)
-  }
+  def contextMenu(flowPane: FlowPane, stage: scalafx.stage.Stage, scene: Scene): Unit
 
 }
 
@@ -180,7 +176,6 @@ case class Line(numberChartObjects: NumberChartObject*) extends NumberChart with
   chart.animated = false
 
 
-
   chart.userData = this
 
   titled.content = chart
@@ -210,7 +205,6 @@ case class Bar(stringNumberChartObjects: StringNumberChartObject*) extends Chart
   chart.animated = false
 
 
-
   chart.userData = this
 
   titled.content = chart
@@ -226,13 +220,23 @@ case class Bar(stringNumberChartObjects: StringNumberChartObject*) extends Chart
     })
   })
 
-  def stringNumContextMenu(flowPane: FlowPane, stage: scalafx.stage.Stage, scene: Scene) = {
-     val seriesAdderMenu = new MenuItem("Add new series")
-      seriesAdderMenu.onAction = (ae: ActionEvent) => {
-        ChartNewSeries.popUpSceneBar(scene, this)
-      }
+  def contextMenu(flowPane: FlowPane, stage: scalafx.stage.Stage, scene: Scene) = {
+    val seriesAdderMenu = new MenuItem("Add new series")
+    seriesAdderMenu.onAction = (ae: ActionEvent) => {
+      ChartNewSeries.popUpSceneBar(scene, this)
+    }
 
-      val SeriesUpdateMenu = new Menu("Update data")
+    val SeriesUpdateMenu = new Menu("Update data")
+    for (obj <- objects) {
+      val menuitem = new MenuItem()
+      menuitem.text <== obj.dataSeries.name
+      menuitem.onAction = (ae: ActionEvent) => {
+        ChartValueUpdater.popUpSceneStringNumber(scene, obj)
+      }
+      SeriesUpdateMenu.items.addAll(menuitem)
+    }
+    objects.onChange({
+      SeriesUpdateMenu.items.clear()
       for (obj <- objects) {
         val menuitem = new MenuItem()
         menuitem.text <== obj.dataSeries.name
@@ -241,21 +245,10 @@ case class Bar(stringNumberChartObjects: StringNumberChartObject*) extends Chart
         }
         SeriesUpdateMenu.items.addAll(menuitem)
       }
-      objects.onChange({
-        SeriesUpdateMenu.items.clear()
-        for (obj <- objects) {
-          val menuitem = new MenuItem()
-          menuitem.text <== obj.dataSeries.name
-          menuitem.onAction = (ae: ActionEvent) => {
-            ChartValueUpdater.popUpSceneStringNumber(scene, obj)
-          }
-          SeriesUpdateMenu.items.addAll(menuitem)
-        }
-      })
+    })
 
-    for(data <- objects)
-   {
-          data.XAxisName.onChange({
+    for (data <- objects) {
+      data.XAxisName.onChange({
         println("Xchooser")
         chart.getXAxis.label = data.XAxisName.value
 
@@ -276,14 +269,27 @@ case class Bar(stringNumberChartObjects: StringNumberChartObject*) extends Chart
         })
       })
 
-   }
+    }
     con.items.addAll(SeriesUpdateMenu, seriesAdderMenu)
+    val deletesYeetus = new MenuItem("Delete")
+    deletesYeetus.onAction = ((ae: ActionEvent) => {
+      val a = flowPane.children.removeAll(titled)
+    })
+
+
+    val save = new MenuItem("Save")
+    save.onAction = (ae: ActionEvent) => {
+      ChartFile.toFile(this, stage)
+    }
+
+    val a = con.items.addAll(deletesYeetus, save)
   }
 }
 
 case class Pie(stringNumberChartObject: StringNumberChartObject) {
 
   val titled = new TitledPane()
+  titled.userData = this
   val chart = new PieChart()
 
   chart.animated = false
@@ -327,6 +333,27 @@ case class Pie(stringNumberChartObject: StringNumberChartObject) {
   // val initData: javafx.scene.chart.XYChart.Series[String, Number] = stringNumberChartObject.dataSeries: XYChart.Series[String, Number]
   // val pieData = pieChartObject.PiedataSeries
 
+  def contextMenu(flowPane: FlowPane, stage: scalafx.stage.Stage, scene: Scene) = {
+    val SeriesUpdateMenu = new Menu("Update data")
+
+    val menuitem = new MenuItem()
+    menuitem.text <== stringNumberChartObject.dataSeries.name
+    menuitem.onAction = (ae: ActionEvent) => {
+      ChartValueUpdater.popUpSceneStringNumber(scene, stringNumberChartObject)
+    }
+    SeriesUpdateMenu.items.addAll(menuitem)
+
+
+    val deletesYeetus = new MenuItem("Delete")
+    deletesYeetus.onAction = ((ae: ActionEvent) => {
+      val a = flowPane.children.removeAll(titled)
+    })
+    val save = new MenuItem("Save")
+    save.onAction = (ae: ActionEvent) => {
+      PieChartFile.toFile(stage, this)
+    }
+    con.items.addAll(deletesYeetus, SeriesUpdateMenu, save)
+  }
 
   def pieUpdate() = {
 

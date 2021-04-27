@@ -2,7 +2,7 @@ package OS2
 
 import OS2.DataChoosers.ChartValueChooser
 import OS2.File.{GenericTableFile, UniversalFileOpener}
-import OS2.GUIElements.{AverageCard, GenericRow, GenericTaulu, MaxCard, MinCard, StandardDeviationCard, SumCard}
+import OS2.Elements.{AverageCard, GenericRow, GenericTaulu, MaxCard, MinCard, StandardDeviationCard, SumCard}
 import scalafx.Includes._
 import scalafx.application.JFXApp
 import scalafx.beans.property.DoubleProperty
@@ -104,7 +104,7 @@ object Appi extends JFXApp {
     val fileOpen = new MenuItem("Open")
 
     fileOpen.onAction = (e: ActionEvent) => {
-      UniversalFileOpener.openSesame(stage, flowPane, tables)
+      UniversalFileOpener.openSesame(stage, flowPane, tables, scenee)
     }
 
 

@@ -1,13 +1,18 @@
-package OS2.GUIElements
+package OS2.Elements
 
+import OS2.DataChoosers.ChartValueUpdater
+import OS2.File.CardFile
 import scalafx.Includes._
 import scalafx.beans.property.{ObjectProperty, StringProperty}
 import scalafx.event._
 import scalafx.geometry.Pos
-import scalafx.scene.control.{ContextMenu, Label, MenuItem, TitledPane}
+import scalafx.scene.Scene
+import scalafx.scene.control.{ContextMenu, Label, Menu, MenuItem, TitledPane}
+import scalafx.scene.layout.FlowPane
 import scalafx.scene.text.Font
 
-class Card {
+trait Card {
+  val cardDataObject: CardDataObject
   val result: ObjectProperty[Number] = ObjectProperty(0: Number)
   val stringResult = StringProperty("")
   if (result != null && result.value != null) {
@@ -34,6 +39,7 @@ class Card {
   val label = new Label()
   label.font = new Font(40d)
   val titled = new TitledPane()
+  titled.userData = this
   titled.prefWidth = 200d
   titled.prefHeight = 200d
   titled.alignment = Pos.Center
@@ -57,9 +63,30 @@ class Card {
 
   }
 
+  def contextMenu(flowPane: FlowPane, stage: scalafx.stage.Stage, scene: Scene) = {
+    val SeriesUpdateMenu = new Menu("Update data")
+
+    val menuitem = new MenuItem()
+    menuitem.text <== cardDataObject.dataName
+    menuitem.onAction = (ae: ActionEvent) => {
+      ChartValueUpdater.popUpSceneCardNums(scene, cardDataObject)
+    }
+    SeriesUpdateMenu.items.addAll(menuitem)
+    val deletesYeetus = new MenuItem("Delete")
+    deletesYeetus.onAction = ((ae: ActionEvent) => {
+      val a = flowPane.children.removeAll(titled)
+    })
+
+    val save = new MenuItem("Save")
+    save.onAction = (ae: ActionEvent) => {
+    CardFile.toFile( stage, this)
+    }
+    con.items.addAll(deletesYeetus, SeriesUpdateMenu, save)
+  }
+
 }
 
-class SumCard(cardDataObject: CardDataObject) extends Card {
+class SumCard(val cardDataObject: CardDataObject) extends Card {
   result.value = (value)
 
   def value: Number = {

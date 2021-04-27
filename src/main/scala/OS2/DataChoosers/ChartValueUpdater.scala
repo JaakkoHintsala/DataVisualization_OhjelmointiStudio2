@@ -1,6 +1,6 @@
 package OS2.DataChoosers
 
-import OS2.GUIElements.{CardDataObject, GenericRow, NumberChartObject, StringNumberChartObject, TablePosVector}
+import OS2.Elements.{CardDataObject, GenericRow, NumberChartObject, StringNumberChartObject, TablePosVector}
 import scalafx.beans.property.ObjectProperty
 import scalafx.collections.ObservableBuffer
 import scalafx.event.ActionEvent
