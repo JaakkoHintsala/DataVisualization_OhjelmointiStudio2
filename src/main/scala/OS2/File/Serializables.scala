@@ -47,7 +47,7 @@ object ToSerializableConverters {
         pieChartConverter(pie)
       }
       case table: GenericTaulu => {
-        val serializible = GenericTauluSerializable(table.data.toVector.map(_.rowValue.value.map(_.strValue.value)), table.headerStrs.toVector, table.table.id.name, table.table.width.value, table.table.height.value)
+        val serializible = GenericTauluSerializable(table.data.toVector.map(_.rowValue.value.map(_.strValue.value)), table.headerStrs.toVector, table.table.id.value, table.table.width.value, table.table.height.value)
         serializible
       }
     }
@@ -152,14 +152,23 @@ object FromSerializableConverters {
 
     for (ser <- dashBoardSerializable.sers) {
       ser match {
-        case taulu: GenericTaulu =>
-          t = t :+ taulu
+
+        case table: GenericTauluSerializable => {
+          println("ser match")
+        val a = GenericTaulu(table.vector.map(GenericRow(_)), table.initHeaders)
+        a.table.prefHeight = table.height
+        a.table.prefWidth = table.width
+        a.table.id = table.id
+          t = t :+ a
+        }
         case _ =>
       }
     }
+    println(t)
     val tables = t.map(_.table)
 
-
+println(tables(0).id.value)
+    println(tables(0).items)
     for (ser <- dashBoardSerializable.sers) {
           ser match {
       case card: CardSerializable => {
@@ -172,12 +181,7 @@ object FromSerializableConverters {
         ret = ret :+ PieChartConverter(pie, tables)
       }
       case table: GenericTauluSerializable => {
-        val a = GenericTaulu(table.vector.map(GenericRow(_)), table.initHeaders)
-        a.table.prefHeight = table.height
-        a.table.prefWidth = table.width
-        a.table.id = table.id
-
-        ret = ret :+ a
+        ret = ret :+ t.find(x => x.table.id.value == table.id).get
       }
       case _ =>
 
@@ -186,7 +190,9 @@ object FromSerializableConverters {
   }
 
   def TablePosConverter(pos: TablePosSerializable, taulut: Vector[TableView[GenericRow]]): Option[TablePosition[GenericRow, String]] = {
+    println("pos id: " + pos.tableID)
     val table = taulut.find(x => x.id.value == pos.tableID)
+    println("found: " + table)
     if (table.isEmpty) {
       None
     }
@@ -229,6 +235,8 @@ object FromSerializableConverters {
     ret.h.value = chartSer.height
     ret.xAxisName.value = chartSer.XaxisName
     ret.yAxisName.value = chartSer.YaxisName
+    //println(ret.asInstanceOf[Scatter].objects.head.Xpositions)
+   // println(ret.asInstanceOf[Scatter].objects.head.XStringProperties)
     ret.asInstanceOf[T]
   }
 

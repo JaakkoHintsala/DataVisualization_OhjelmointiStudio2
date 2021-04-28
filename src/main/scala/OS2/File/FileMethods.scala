@@ -136,7 +136,8 @@ object GenericTableFile {
     val selected = chooser.showSaveDialog(stage)
 
     if (selected != null) {
-      val serializible = GenericTauluSerializable(table.data.toVector.map(_.rowValue.value.map(_.strValue.value)), table.headerStrs.toVector, table.table.id.name, table.table.width.value, table.table.height.value)
+      println("toFile: " + table.table.id.value)
+      val serializible = GenericTauluSerializable(table.data.toVector.map(_.rowValue.value.map(_.strValue.value)), table.headerStrs.toVector, table.table.id.value, table.table.width.value, table.table.height.value)
       val oos = new ObjectOutputStream(new FileOutputStream(selected.getAbsolutePath))
       oos.writeObject(serializible)
       oos.close()
