@@ -82,9 +82,11 @@ class NumberChartObject(xCol: TablePosVector, yCol: TablePosVector) extends Data
           e.consume()
         }
       }
+val extraData = (x._2.doubleValue() / nums.map(_._2.doubleValue()).max) * 100
+
+      val toolT: Tooltip = new Tooltip(s"x: ${initData.getXValue} y: ${initData.getYValue} ${extraData.toInt}% from the max value")
 
 
-      val toolT: Tooltip = new Tooltip(s"x: ${initData.getXValue} y: ${initData.getYValue}")
       javafx.scene.control.Tooltip.install(initData.getNode, toolT)
 
       println(s"x: ${initData.getXValue} y: ${initData.getYValue}")
@@ -182,23 +184,24 @@ class StringNumberChartObject(xCol: TablePosVector, yCol: TablePosVector) extend
       val nodeStack = new StackPane()
       nodeStack.setMinSize(10.0, 10.0)
       initData.setNode(nodeStack)
-      //println(initData.getNode)
+
 
 
       initData.getNode.filterEvent(MouseEvent.MousePressed) {
         e: MouseEvent => {
-          // setTooltip( new Tooltip(s"x: ${initData.getXValue} y: ${initData.getYValue}"))
-          println(s"x: ${initData.getXValue} y: ${initData.getYValue}")
+
+
 
           e.consume()
         }
       }
+      val extraData = (x._2.doubleValue() / nums.map(_._2.doubleValue().abs).sum) * 100
 
-
-      val toolT: Tooltip = new Tooltip(s"x: ${initData.getXValue} y: ${initData.getYValue}")
+      val toolT: Tooltip = new Tooltip(s"x: ${initData.getXValue} y: ${initData.getYValue} ${extraData.toInt}% from the max value")
       javafx.scene.control.Tooltip.install(initData.getNode, toolT)
 
-      println(s"x: ${initData.getXValue} y: ${initData.getYValue}")
+
+
 
       initData
 

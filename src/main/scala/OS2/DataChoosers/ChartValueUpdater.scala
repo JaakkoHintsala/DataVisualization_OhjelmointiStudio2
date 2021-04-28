@@ -63,6 +63,7 @@ object ChartValueUpdater {
 
     textSeriesname.prefHeight = 35d
     textXAxis.text = numberChartObject.XAxisName.value
+
     textYAxis.text = numberChartObject.YAxisName.value
     textSeriesname.text = numberChartObject.dataSeries.name.value
     vbox1.children = List(listA, textXAxis, buttonA)
@@ -87,20 +88,17 @@ object ChartValueUpdater {
     buttonA.onAction = (e: ActionEvent) => {
       textXAxis.disable = true
       buttonA.disable = true
-      // println(positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]])
+
       XaxisVals = positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]].toVector
-      // println("x: " + XaxisVals)
-      //println("y: " + YaxisVals)
+
       scenePane.requestFocus()
     }
     buttonB.onAction = (e: ActionEvent) => {
       textYAxis.disable = true
       buttonB.disable = true
-      //  println(positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]])
+
       YaxisVals = positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]].toVector
 
-      //println("x: " + XaxisVals)
-      //println("y: " + YaxisVals)
       scenePane.requestFocus()
     }
     endButton.onAction = (e: ActionEvent) => {
@@ -146,7 +144,7 @@ object ChartValueUpdater {
             val bb = positions.retainAll(cc.toVector)
             val d = positions.addAll(diff)
 
-            println(t.getSelectionModel)
+
 
             t.getSelectionModel.getSelectedCells.onChange({
 
@@ -246,20 +244,18 @@ object ChartValueUpdater {
     buttonA.onAction = (e: ActionEvent) => {
       textXAxis.disable = true
       buttonA.disable = true
-      // println(positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]])
+
       XaxisVals = positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]].toVector
-      // println("x: " + XaxisVals)
-      //println("y: " + YaxisVals)
+
       scenePane.requestFocus()
     }
     buttonB.onAction = (e: ActionEvent) => {
       textYAxis.disable = true
       buttonB.disable = true
-      //  println(positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]])
+
       YaxisVals = positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]].toVector
 
-      //println("x: " + XaxisVals)
-      //println("y: " + YaxisVals)
+
       scenePane.requestFocus()
     }
     endButton.onAction = (e: ActionEvent) => {
@@ -305,7 +301,7 @@ object ChartValueUpdater {
             val bb = positions.retainAll(cc.toVector)
             val d = positions.addAll(diff)
 
-            println(t.getSelectionModel)
+
 
             t.getSelectionModel.getSelectedCells.onChange({
 
@@ -425,8 +421,6 @@ object ChartValueUpdater {
             val diff = cc -- positions
             val bb = positions.retainAll(cc.toVector)
             val d = positions.addAll(diff)
-
-            println(t.getSelectionModel)
 
             t.getSelectionModel.getSelectedCells.onChange({
 

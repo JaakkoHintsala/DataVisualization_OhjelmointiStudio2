@@ -19,7 +19,7 @@ import java.nio.file.Paths
 import java.io.File
 
 object Appi extends JFXApp {
-    stage = new JFXApp.PrimaryStage {
+  stage = new JFXApp.PrimaryStage {
 
     title.value = "DATA"
     width = 1000
@@ -33,12 +33,10 @@ object Appi extends JFXApp {
 
   roott.top = new MenuBar {
     val fileMenu = new Menu("File")
-    val settings = new Menu("Settings")
-    val viewMenu = new Menu("View")
 
     val fileNew = new Menu("New")
     val fileNewTable = new MenuItem("Table")
-    val fileNewChatter = new MenuItem("Chatterchart")
+    val fileNewChatter = new MenuItem("Scatterchart")
     val fileNewLine = new MenuItem("Linechart")
     val fileNewBar = new MenuItem("Barchart")
     val fileNewPie = new MenuItem("Piechart")
@@ -109,7 +107,11 @@ object Appi extends JFXApp {
     }
 
 
-    val fileDelete = new MenuItem("Delete")
+    val fileDelete = new MenuItem("Exit")
+    fileDelete.onAction = (ae: ActionEvent) => {
+
+      stage.close()
+    }
 
     val fileSave = new MenuItem("Save dashcoard")
 
@@ -121,7 +123,7 @@ object Appi extends JFXApp {
 
 
     fileMenu.items = List(
-      fileNew,
+
       fileOpen,
       fileSave,
       fileDelete
@@ -130,8 +132,8 @@ object Appi extends JFXApp {
 
     menus = List(
       fileMenu,
-      viewMenu,
-      settings
+      fileNew
+
 
     )
   }

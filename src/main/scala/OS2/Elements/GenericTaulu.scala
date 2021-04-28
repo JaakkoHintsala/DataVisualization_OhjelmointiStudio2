@@ -94,11 +94,11 @@ case class GenericTaulu(vector: Vector[GenericRow], initHeaders: Vector[String])
 
     table.columns.remove(0, table.columns.size)
 
-    //println("bruhfdt" + data)
+
 
     if (data.isEmpty || data.headOption.exists(_.propVector.isEmpty)) {
       addCol()
-      println("bruhhhh")
+
     }
     for (colIndex <- data(0).rowValue.value.indices) {
 
@@ -151,7 +151,7 @@ case class GenericTaulu(vector: Vector[GenericRow], initHeaders: Vector[String])
           }
           if (me.clickCount > 1 && stack.children.forall(x => !(x.getClass.getSimpleName == "TextField"))) {
             val text = new TextField()
-            // println("pseudoclass: " + text.pseudoClassStates + " styleclass: " + text.styleClass + " class: " + text.getClass.toString )
+
             text.text = label.text.value
 
             text.onAction = (a: ActionEvent) => {
@@ -159,7 +159,7 @@ case class GenericTaulu(vector: Vector[GenericRow], initHeaders: Vector[String])
               table.requestFocus()
             }
             text.focusedProperty().addListener((pro, oldV, newV) => {
-              // println("vals" + pro.toString + oldV + newV)
+
               if (!newV) {
                 stack.children.remove(text)
                 label.toFront
@@ -199,7 +199,7 @@ case class GenericTaulu(vector: Vector[GenericRow], initHeaders: Vector[String])
           table.requestFocus()
 
           table.refresh()
-          // println(table.selectionModel.value.selectedCells)
+
 
         }
       }
@@ -218,7 +218,6 @@ case class GenericTaulu(vector: Vector[GenericRow], initHeaders: Vector[String])
     table.minHeight = (table.fixedCellSize.value + 0.5) * table.items.value.size() + 30d
     table.maxHeight = (table.fixedCellSize.value + 0.5) * table.items.value.size() + 30d
     data.onChange({
-      println("data")
       table.prefHeight = (table.fixedCellSize.value + 0.5) * table.items.value.size() + 30d
       table.minHeight = (table.fixedCellSize.value + 0.5) * table.items.value.size() + 30d
       table.maxHeight = (table.fixedCellSize.value + 0.5) * table.items.value.size() + 30d
@@ -229,7 +228,6 @@ case class GenericTaulu(vector: Vector[GenericRow], initHeaders: Vector[String])
     table.minWidth = table.columns.size * (columWidth.value + 1d) + 15d
 
     table.columns.onChange({
-      println("cols")
       table.prefWidth = table.columns.size * (columWidth.value + 1d) + 15d
       table.maxWidth = table.columns.size * (columWidth.value + 1d) + 15d
       table.minWidth = table.columns.size * (columWidth.value + 1d) + 15d

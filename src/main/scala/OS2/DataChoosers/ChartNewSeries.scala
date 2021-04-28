@@ -88,20 +88,18 @@ object ChartNewSeries {
     buttonA.onAction = (e: ActionEvent) => {
       textXAxis.disable = true
       buttonA.disable = true
-      // println(positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]])
+
       XaxisVals = positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]].toVector
-      // println("x: " + XaxisVals)
-      //println("y: " + YaxisVals)
+
       scenePane.requestFocus()
     }
     buttonB.onAction = (e: ActionEvent) => {
       textYAxis.disable = true
       buttonB.disable = true
-      //  println(positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]])
+
       YaxisVals = positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]].toVector
 
-      //println("x: " + XaxisVals)
-      //println("y: " + YaxisVals)
+
       scenePane.requestFocus()
     }
     endButton.onAction = (e: ActionEvent) => {
@@ -113,19 +111,19 @@ object ChartNewSeries {
       numberChartObject.YAxisName.value = textYAxis.text.value
       numberChart.objects.foreach(x => {
         if (x.XAxisName.value != numberChartObject.XAxisName.value) {
-          println("set series X")
+
           x.XAxisName.value = numberChartObject.XAxisName.value
         }
       })
       numberChart.objects.foreach(x => {
-        println("set series Y")
+
         if (x.YAxisName.value != numberChartObject.YAxisName.value) {
           x.YAxisName.value = numberChartObject.YAxisName.value
         }
       })
 
       numberChartObject.XAxisName.onChange({
-        println("update series")
+
         numberChart.objects.foreach(x => {
           if (x.XAxisName.value != numberChartObject.XAxisName.value) {
             x.XAxisName.value = numberChartObject.XAxisName.value
@@ -274,16 +272,15 @@ object ChartNewSeries {
     buttonA.onAction = (e: ActionEvent) => {
       textXAxis.disable = true
       buttonA.disable = true
-      // println(positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]])
+
       XaxisVals = positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]].toVector
-      // println("x: " + XaxisVals)
-      //println("y: " + YaxisVals)
+
       scenePane.requestFocus()
     }
     buttonB.onAction = (e: ActionEvent) => {
       textYAxis.disable = true
       buttonB.disable = true
-      println(positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]])
+
       YaxisVals = positions.asInstanceOf[ObservableBuffer[javafx.scene.control.TablePosition[GenericRow, String]]].toVector
       scenePane.requestFocus()
     }
@@ -296,19 +293,19 @@ object ChartNewSeries {
       stringNumberChartObject.YAxisName.value = textYAxis.text.value
       bar.objects.foreach(x => {
         if (x.XAxisName.value != stringNumberChartObject.XAxisName.value) {
-          println("set series X")
+
           x.XAxisName.value = stringNumberChartObject.XAxisName.value
         }
       })
       bar.objects.foreach(x => {
-        println("set series Y")
+
         if (x.YAxisName.value != stringNumberChartObject.YAxisName.value) {
           x.YAxisName.value = stringNumberChartObject.YAxisName.value
         }
       })
 
       stringNumberChartObject.XAxisName.onChange({
-        println("update series")
+
         bar.objects.foreach(x => {
           if (x.XAxisName.value != stringNumberChartObject.XAxisName.value) {
             x.XAxisName.value = stringNumberChartObject.XAxisName.value

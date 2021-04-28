@@ -31,57 +31,65 @@ class TableFilter extends FileChooser.ExtensionFilter("Table", "*.table")
 class AllFilter extends FileChooser.ExtensionFilter("DashBoard Object", Seq("*.table", "*.card", "*.pieC", "*.barC", "*.scatterC", "*.lineC", "*.dashb"))
 
 object UniversalFileOpener {
+
   def openSesame(stage: Stage, flowPane: FlowPane, tbls: Vector[TableView[GenericRow]], scene: Scene) = {
 
+    try {
+      val chooser = new FileChooser()
+      chooser.extensionFilters.addAll(new AllFilter)
+      val currentPath = Paths.get(".").toAbsolutePath.normalize().toString
+      chooser.setInitialDirectory(new File(currentPath))
 
-    val chooser = new FileChooser()
-    chooser.extensionFilters.addAll(new AllFilter)
-    val currentPath = Paths.get(".").toAbsolutePath.normalize().toString
-    chooser.setInitialDirectory(new File(currentPath))
+      val selected = chooser.showOpenDialog(stage)
+      if (selected != null) {
+        if (selected.getAbsolutePath.endsWith(".table")) {
+          val taulu = GenericTableFile.fromFile(selected.getAbsolutePath)
+          val savemenu = new MenuItem("Save Table")
+          savemenu.onAction = (ae: ActionEvent) => {
+            OS2.File.GenericTableFile.toFile(stage, taulu)
 
-    val selected = chooser.showOpenDialog(stage)
-    if (selected != null) {
-      if (selected.getAbsolutePath.endsWith(".table")) {
-        val taulu = GenericTableFile.fromFile(selected.getAbsolutePath)
-        val savemenu = new MenuItem("Save Table")
-        savemenu.onAction = (ae: ActionEvent) => {
-          OS2.File.GenericTableFile.toFile(stage, taulu)
+          }
+          taulu.cmenu.items.add(savemenu)
+          val newTable = taulu.table
 
+          val deletesYeetus = new MenuItem("Delete")
+          deletesYeetus.onAction = ((ae: ActionEvent) => {
+            val a = flowPane.children.removeAll(taulu.titled)
+          })
+
+          taulu.cmenu.items.add(deletesYeetus)
+          flowPane.children.add(taulu.titled)
         }
-        taulu.cmenu.items.add(savemenu)
-        val newTable = taulu.table
+        if (selected.getAbsolutePath.endsWith(".lineC") ||
+          selected.getAbsolutePath.endsWith(".scatterC") ||
+          selected.getAbsolutePath.endsWith(".barC")) {
+          val ch = ChartFile.fromFile(selected.getAbsolutePath, tbls)
+          ch.contextMenu(flowPane, stage, scene)
 
-        val deletesYeetus = new MenuItem("Delete")
-        deletesYeetus.onAction = ((ae: ActionEvent) => {
-          val a = flowPane.children.removeAll(taulu.titled)
-        })
-
-        taulu.cmenu.items.add(deletesYeetus)
-        flowPane.children.add(taulu.titled)
-      }
-      if (selected.getAbsolutePath.endsWith(".lineC") ||
-        selected.getAbsolutePath.endsWith(".scatterC") ||
-        selected.getAbsolutePath.endsWith(".barC")) {
-        val ch = ChartFile.fromFile(selected.getAbsolutePath, tbls)
-        ch.contextMenu(flowPane, stage, scene)
-
-        flowPane.children.add(ch.titled)
-      }
-      if (selected.getAbsolutePath.endsWith(".pieC")) {
-        val pie = PieChartFile.fromFile(selected.getAbsolutePath, tbls)
-        pie.contextMenu(flowPane, stage, scene)
-        flowPane.children.add(pie.titled)
-      }
-      if (selected.getAbsolutePath.endsWith(".card")) {
-        val c = CardFile.fromFile(selected.getAbsolutePath, tbls)
-        c.contextMenu(flowPane, stage, scene)
-        flowPane.children.add(c.titled)
-      }
-      if (selected.getAbsolutePath.endsWith(".dashb")) {
-        DashBoardFile.fromFile(selected.getAbsolutePath)
+          flowPane.children.add(ch.titled)
+        }
+        if (selected.getAbsolutePath.endsWith(".pieC")) {
+          val pie = PieChartFile.fromFile(selected.getAbsolutePath, tbls)
+          pie.contextMenu(flowPane, stage, scene)
+          flowPane.children.add(pie.titled)
+        }
+        if (selected.getAbsolutePath.endsWith(".card")) {
+          val c = CardFile.fromFile(selected.getAbsolutePath, tbls)
+          c.contextMenu(flowPane, stage, scene)
+          flowPane.children.add(c.titled)
+        }
+        if (selected.getAbsolutePath.endsWith(".dashb")) {
+          DashBoardFile.fromFile(selected.getAbsolutePath, stage, flowPane, tbls, scene)
+        }
       }
     }
+    catch {
+      case fe: IOException => println("io exeption during opening a file")
+      case e: Exception => println("some other exeption during opening a file")
+    }
+
   }
+
 
 }
 
@@ -136,7 +144,7 @@ object GenericTableFile {
     val selected = chooser.showSaveDialog(stage)
 
     if (selected != null) {
-      println("toFile: " + table.table.id.value)
+
       val serializible = GenericTauluSerializable(table.data.toVector.map(_.rowValue.value.map(_.strValue.value)), table.headerStrs.toVector, table.table.id.value, table.table.width.value, table.table.height.value)
       val oos = new ObjectOutputStream(new FileOutputStream(selected.getAbsolutePath))
       oos.writeObject(serializible)
@@ -223,17 +231,17 @@ object DashBoardFile {
     }
   }
 
-  def fromFile(polku: String) = {
+  def fromFile(polku: String, stage: Stage, flowPane: FlowPane, tbls: Vector[TableView[GenericRow]], scene: Scene) = {
     val ois = new ObjectInputStream(new FileInputStream(polku))
     val ret = ois.readObject.asInstanceOf[DashBoardSerializable]
     ois.close()
-    val tupla = FromSerializableConverters.DashboardConverter(ret)
+    val tupla = FromSerializableConverters.DashboardConverter(ret, stage, flowPane, tbls, scene)
     val gui = new GUI {
 
       tables = tupla._2.map(_.table)
       flowPane.children = (tupla._1.map(_.titled).toList)
     }
-    println("bruh")
+
     gui.stage.show()
   }
 }

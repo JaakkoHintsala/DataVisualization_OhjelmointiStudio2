@@ -16,9 +16,10 @@ import scalafx.stage.Stage
 class GUI {
 
   val stage = new Stage
-    stage.title.value = "DATA"
-    stage.width = 1000
-    stage.height = 700
+  stage.title.value = "DATA"
+  stage.width = 1000
+  stage.height = 700
+
   val flowPane = new FlowPane(Orientation.Horizontal, 10d, 10d)
   val roott = new BorderPane()
   val scenee = new Scene(roott)
@@ -26,12 +27,10 @@ class GUI {
 
   roott.top = new MenuBar {
     val fileMenu = new Menu("File")
-    val settings = new Menu("Settings")
-    val viewMenu = new Menu("View")
 
     val fileNew = new Menu("New")
     val fileNewTable = new MenuItem("Table")
-    val fileNewChatter = new MenuItem("Chatterchart")
+    val fileNewChatter = new MenuItem("Scatterchart")
     val fileNewLine = new MenuItem("Linechart")
     val fileNewBar = new MenuItem("Barchart")
     val fileNewPie = new MenuItem("Piechart")
@@ -102,7 +101,11 @@ class GUI {
     }
 
 
-    val fileDelete = new MenuItem("Delete")
+    val fileDelete = new MenuItem("Exit")
+    fileDelete.onAction = (ae: ActionEvent) => {
+
+      stage.close()
+    }
 
     val fileSave = new MenuItem("Save dashcoard")
 
@@ -114,7 +117,7 @@ class GUI {
 
 
     fileMenu.items = List(
-      fileNew,
+
       fileOpen,
       fileSave,
       fileDelete
@@ -123,8 +126,8 @@ class GUI {
 
     menus = List(
       fileMenu,
-      viewMenu,
-      settings
+      fileNew
+
 
     )
   }

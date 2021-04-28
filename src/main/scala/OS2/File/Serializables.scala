@@ -3,8 +3,12 @@ package OS2.File
 import OS2.Elements.{Bar, Card, Chart, DataObject, GenericRow, GenericTaulu, Line, NumberChart, NumberChartObject, Pie, Scatter, StringNumberChartObject, TablePosVector}
 import OS2.Elements._
 import scalafx.beans.property.StringProperty
-import scalafx.scene.control.{TableColumn, TablePosition, TableView, TitledPane}
+import scalafx.scene.control.{MenuItem, TableColumn, TablePosition, TableView, TitledPane}
 import scalafx.Includes._
+import scalafx.event.ActionEvent
+import scalafx.scene.Scene
+import scalafx.scene.layout.FlowPane
+import scalafx.stage.Stage
 
 import java.io._
 
@@ -75,12 +79,10 @@ object ToSerializableConverters {
         ChartSerializable(
           chart.getClass.asInstanceOf[Class[T]],
           x.objects.map(y => {
-            println("x: " + y.Xpositions)
-            println("y: " + y.Ypositions)
-            println(y.dataSeries)
+
+
             val a = SeriesConverter[DataObject](y)
-            println("x: " + a.xVals)
-            println("y: " + a.yVals)
+
             a
           }).toVector,
           x.xAxis.label.value,
@@ -146,7 +148,7 @@ object ToSerializableConverters {
 
 object FromSerializableConverters {
 
-  def DashboardConverter(dashBoardSerializable: DashBoardSerializable): (Vector[Saveable], Vector[GenericTaulu]) = {
+  def DashboardConverter(dashBoardSerializable: DashBoardSerializable, stage: Stage, flowPane: FlowPane, tbls: Vector[TableView[GenericRow]], scene: Scene): (Vector[Saveable], Vector[GenericTaulu]) = {
     var t = Vector[GenericTaulu]()
     var ret = Vector[Saveable]()
 
@@ -154,31 +156,50 @@ object FromSerializableConverters {
       ser match {
 
         case table: GenericTauluSerializable => {
-          println("ser match")
+
         val a = GenericTaulu(table.vector.map(GenericRow(_)), table.initHeaders)
         a.table.prefHeight = table.height
         a.table.prefWidth = table.width
         a.table.id = table.id
+          val savemenu = new MenuItem("Save Table")
+          savemenu.onAction = (ae: ActionEvent) => {
+            OS2.File.GenericTableFile.toFile(stage, a)
+
+          }
+         a.cmenu.items.add(savemenu)
+          val newTable = a.table
+
+          val deletesYeetus = new MenuItem("Delete")
+          deletesYeetus.onAction = ((ae: ActionEvent) => {
+          val b = flowPane.children.removeAll(a.titled)
+          })
+
+          a.cmenu.items.add(deletesYeetus)
           t = t :+ a
         }
         case _ =>
       }
     }
-    println(t)
+
     val tables = t.map(_.table)
 
-println(tables(0).id.value)
-    println(tables(0).items)
+
     for (ser <- dashBoardSerializable.sers) {
           ser match {
       case card: CardSerializable => {
-        ret = ret :+ CardConverter(card, tables)
+        val ch = CardConverter(card, tables)
+        ch.contextMenu(flowPane, stage, scene)
+        ret = ret :+ ch
       }
       case chart: ChartSerializable[_] => {
-        ret = ret :+ ChartConverter(chart, tables)
+        val ch = ChartConverter(chart, tables)
+        ch.contextMenu(flowPane, stage, scene)
+        ret = ret :+ ch
       }
       case pie: PieChartSerializable => {
-        ret = ret :+ PieChartConverter(pie, tables)
+        val ch = PieChartConverter(pie, tables)
+        ch.contextMenu(flowPane, stage, scene)
+        ret = ret :+ ch
       }
       case table: GenericTauluSerializable => {
         ret = ret :+ t.find(x => x.table.id.value == table.id).get
@@ -190,9 +211,9 @@ println(tables(0).id.value)
   }
 
   def TablePosConverter(pos: TablePosSerializable, taulut: Vector[TableView[GenericRow]]): Option[TablePosition[GenericRow, String]] = {
-    println("pos id: " + pos.tableID)
+
     val table = taulut.find(x => x.id.value == pos.tableID)
-    println("found: " + table)
+
     if (table.isEmpty) {
       None
     }
@@ -235,8 +256,7 @@ println(tables(0).id.value)
     ret.h.value = chartSer.height
     ret.xAxisName.value = chartSer.XaxisName
     ret.yAxisName.value = chartSer.YaxisName
-    //println(ret.asInstanceOf[Scatter].objects.head.Xpositions)
-   // println(ret.asInstanceOf[Scatter].objects.head.XStringProperties)
+
     ret.asInstanceOf[T]
   }
 
